@@ -1,0 +1,5 @@
+aduser
+adselect
+adpay
+adserver
+adpanel
