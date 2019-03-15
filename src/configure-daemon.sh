@@ -32,6 +32,6 @@ then
         envsubst '${APP_PORT},${APP_HOST}' < ${FILE} | tee ${TARGET_DIR}/${SERVICE_NAME}-$(basename ${FILE})
     done
 
-    echo "Reload or (re)start ${DAEMON_SERVICE_NAME}"
-    systemctl reload-or-restart ${DAEMON_SERVICE_NAME}
+    echo "Restart ${DAEMON_SERVICE_NAME}"
+    systemctl restart ${DAEMON_SERVICE_NAME}
 fi
