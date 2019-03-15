@@ -17,8 +17,8 @@ test -z $1 || shift
 
 source $(dirname $(readlink -f "$0"))/_functions.sh root
 
-echo "Remove ${SERVICE_NAME}-${DAEMON_NAME}-*.conf from ${DAEMON_NAME} (if any exist)"
-find  ${TARGET_DIR} -maxdepth 1 -name "${SERVICE_NAME}-${DAEMON_NAME}-*.conf" -type f -delete
+echo "Remove ${SERVICE_NAME}-${DAEMON_NAME}*.conf from ${DAEMON_NAME} (if any exist)"
+find  ${TARGET_DIR} -maxdepth 1 -name "${SERVICE_NAME}-${DAEMON_NAME}*.conf" -type f -delete
 
 FILE_COUNT=$(find ${SOURCE_DIR} -maxdepth 1 -name "${DAEMON_NAME}*.conf" -type f -print | wc -l)
 FILE_ITEMS=$(find ${SOURCE_DIR} -maxdepth 1 -name "${DAEMON_NAME}*.conf" -type f -print)
@@ -28,8 +28,8 @@ then
     for FILE in ${FILE_ITEMS}
     do
         echo "Copy ${FILE} to ${TARGET_DIR}"
-        [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]] && cat ${VENDOR_DIR}/${SERVICE_NAME}/.env && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
-        envsubst < ${FILE} | tee ${TARGET_DIR}/${SERVICE_NAME}-$(basename ${FILE})
+        [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]] && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
+        envsubst '${APP_PORT},${APP_HOST}' < ${FILE} | tee ${TARGET_DIR}/${SERVICE_NAME}-$(basename ${FILE})
     done
 
     echo "Reload or (re)start ${DAEMON_SERVICE_NAME}"

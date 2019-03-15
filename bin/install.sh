@@ -2,20 +2,21 @@
 set -e
 
 export DEBUG_MODE=1
+export SCRIPT_DIR=$(mktemp --directory)
 SKIP_BOOTSTRAP=1
 
 SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
 source ${SRC_DIR}/_functions.sh root
 
-if [[ -z "$1" ]]
+if [[ -z ${1:-""} ]]
 then
-    SERVICES=$(cat ${SRC_DIR}/services.txt)
+    SERVICES=$(cat ${SCRIPT_DIR}/services.txt)
 else
     SERVICES=($1)
     shift
 fi
 
-if [[ -z "$1" ]]
+if [[ -z ${1:-""} ]]
 then
     BRANCH=master
 else
@@ -23,9 +24,11 @@ else
     shift
 fi
 
+cp -r ${SRC_DIR}/* ${SCRIPT_DIR}
+
 if [[ ${SKIP_BOOTSTRAP:-0} -ne 1 ]]
 then
-    ${SRC_DIR}/bootstrap.sh
+    ${SCRIPT_DIR}/bootstrap.sh
 fi
 
 if [[ ${SKIP_CLONE:-0} -ne 1 ]]
@@ -34,24 +37,24 @@ then
     do
         if [[ "$SERVICE" == "aduser" ]]
         then
-            ${SRC_DIR}/clone.sh ${SERVICE} deploy
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} deploy
         elif [[ "$SERVICE" == "adserver" ]]
         then
-            ${SRC_DIR}/clone.sh ${SERVICE} deploy
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} deploy
         elif [[ "$SERVICE" == "adpanel" ]]
         then
-            ${SRC_DIR}/clone.sh ${SERVICE} deploy
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} deploy
         else
-            ${SRC_DIR}/clone.sh ${SERVICE} ${BRANCH}
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} ${BRANCH}
         fi
     done
 fi
 
-${SRC_DIR}/prepare-directories.sh
+${SCRIPT_DIR}/prepare-directories.sh
 
 if [[ ${SKIP_CONFIGURE:-0} -ne 1 ]]
 then
-    sudo --preserve-env --user=${INSTALLATION_USER} ${SRC_DIR}/configure.sh
+    sudo --preserve-env --user=${VENDOR_USER} ${SCRIPT_DIR}/configure.sh
 fi
 
 if [[ ${SKIP_SERVICES:-0} -ne 1 ]]
@@ -59,13 +62,20 @@ then
     for SERVICE in ${SERVICES}
     do
         export SERVICE_NAME=${SERVICE}
-        ${SRC_DIR}/run-target.sh build /opt/adshares/${SERVICE} /opt/adshares/${SERVICE}/deploy ${INSTALLATION_USER} ${SRC_DIR} /opt/adshares/${SERVICE}
 
-        ${SRC_DIR}/configure-daemon.sh nginx /opt/adshares/${SERVICE}/deploy
-        ${SRC_DIR}/configure-daemon.sh supervisor /opt/adshares/${SERVICE}/deploy
+        [[ -e ${VENDOR_DIR}/${SERVICE}/.env ]] && cat ${VENDOR_DIR}/${SERVICE}/.env || echo "No ${VENDOR_DIR}/${SERVICE}/.env"
+
+        ${SCRIPT_DIR}/run-target.sh stop ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
+
+        ${SCRIPT_DIR}/run-target.sh build ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
+
+        ${SCRIPT_DIR}/run-target.sh start ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
+
+        ${SCRIPT_DIR}/configure-daemon.sh nginx ${VENDOR_DIR}/${SERVICE}/deploy
+        ${SCRIPT_DIR}/configure-daemon.sh supervisor ${VENDOR_DIR}/${SERVICE}/deploy
     done
 fi
 
-${SRC_DIR}/configure-daemon.sh fpm ${SRC_DIR} /etc/php/7.2/fpm/pool.d php7.2-fpm
+${SCRIPT_DIR}/configure-daemon.sh fpm-pool ${SCRIPT_DIR} /etc/php/7.2/fpm/pool.d php7.2-fpm
 
-rm -rf ${SRC_DIR}
+rm -rf ${SCRIPT_DIR}
