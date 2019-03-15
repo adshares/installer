@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
-if [[ $EUID -ne 0 ]]
-then
-    echo "You need to be root to run $0" >&2
-    exit 1
-fi
+export DEBUG_MODE=1
+SKIP_BOOTSTRAP=1
 
 SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
+source ${SRC_DIR}/_functions.sh root
 
 if [[ -z "$1" ]]
 then
     SERVICES=$(cat ${SRC_DIR}/services.txt)
 else
-    SERVICES="$1"
+    SERVICES=($1)
     shift
 fi
 
@@ -50,8 +48,6 @@ then
 fi
 
 ${SRC_DIR}/prepare-directories.sh
-
-export DEBUG_MODE=1
 
 if [[ ${SKIP_CONFIGURE:-0} -ne 1 ]]
 then
