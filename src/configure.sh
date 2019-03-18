@@ -55,7 +55,7 @@ read_option MAIL_PASSWORD "mail smtp password" 1
 read_option MAIL_FROM_ADDRESS "mail from address" 1
 read_option MAIL_FROM_NAME "mail from name" 1
 
-INSTALL_ADUSER=Y
+INSTALL_ADUSER=N
 read_option INSTALL_ADUSER "Install local aduser service?" 0 1
 
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]]
@@ -64,7 +64,7 @@ then
     INSTALL_DATA_HOSTNAME=${INSTALL_DATA_HOSTNAME:-127.0.0.2}
     read_option INSTALL_DATA_HOSTNAME       "AdUser domain (data API)" 1
 else
-    ADUSER_ENDPOINT="https://example.com/"
+    ADUSER_ENDPOINT="https://gitoku.com/"
     read_option ADUSER_ENDPOINT "External aduser service endpoint" 1
 
     ADUSER_INTERNAL_LOCATION="$ADUSER_ENDPOINT"
@@ -139,7 +139,6 @@ then
 
     save_env ${VENDOR_DIR}/adpay/.env.dist ${VENDOR_DIR}/adpay/.env
 fi
-
 
 if [[ "${INSTALL_ADPANEL^^}" == "Y" ]]
 then

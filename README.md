@@ -4,3 +4,10 @@
     </a>
 </p>
 <h3 align="center"><small>Adshares / Installer</small></h3>
+To install Adshares AdServer, just run 
+
+```
+bin/install.sh
+```
+
+and follow through all the steps.
