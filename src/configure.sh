@@ -146,6 +146,9 @@ then
 
     unset APP_ENV
 
+    APP_HOST=${INSTALL_HOSTNAME}
+    APP_PORT=80
+
     read_env ${VENDOR_DIR}/adpanel/.env || read_env ${VENDOR_DIR}/adpanel/.env.dist
 
     save_env ${VENDOR_DIR}/adpanel/.env.dist ${VENDOR_DIR}/adpanel/.env

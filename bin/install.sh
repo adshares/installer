@@ -7,6 +7,7 @@ SKIP_BOOTSTRAP=1
 
 SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
 source ${SRC_DIR}/_functions.sh root
+cp -r ${SRC_DIR}/* ${SCRIPT_DIR}
 
 if [[ -z ${1:-""} ]]
 then
@@ -24,7 +25,6 @@ else
     shift
 fi
 
-cp -r ${SRC_DIR}/* ${SCRIPT_DIR}
 
 if [[ ${SKIP_BOOTSTRAP:-0} -ne 1 ]]
 then
