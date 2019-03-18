@@ -25,7 +25,6 @@ else
     shift
 fi
 
-
 if [[ ${SKIP_BOOTSTRAP:-0} -ne 1 ]]
 then
     ${SCRIPT_DIR}/bootstrap.sh

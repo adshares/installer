@@ -13,19 +13,21 @@ INSTALL_HOSTNAME=${INSTALL_HOSTNAME:-localhost}
 INSTALL_API_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$APP_URL" host 2>/dev/null`
 INSTALL_API_HOSTNAME=${INSTALL_API_HOSTNAME:-127.0.0.1}
 
-read_option INSTALL_HOSTNAME       "Adpanel domain (UI for advertisers and publishers)" 1
-read_option INSTALL_API_HOSTNAME   "Adserver domain (serving banners)" 1
+read_option INSTALL_HOSTNAME       "AdPanel domain (UI for advertisers and publishers)" 1
+read_option INSTALL_API_HOSTNAME   "AdServer domain (serving banners)" 1
 
-USE_HTTPS=Y
+USE_HTTPS=N
 read_option USE_HTTPS "Configure for HTTPS?" 0 1
 
-if [ "${USE_HTTPS^^}" == "Y" ]
+if [[ "${USE_HTTPS^^}" == "Y" ]]
 then
     INSTALL_SCHEME=https
     BANNER_FORCE_HTTPS=true
+    APP_PORT=443
 else
     INSTALL_SCHEME=http
     BANNER_FORCE_HTTPS=false
+    APP_PORT=80
 fi
 
 export INSTALL_HOSTNAME
@@ -58,11 +60,9 @@ read_option INSTALL_ADUSER "Install local aduser service?" 0 1
 
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]]
 then
-    INSTALL_ADUSER_BROWSCAP=Y
-    read_option INSTALL_ADUSER_BROWSCAP "Install local aduser browscap?" 0 1
-
-    INSTALL_ADUSER_GEOLITE=Y
-    read_option INSTALL_ADUSER_GEOLITE "Install local aduser geolite?" 0 1
+    INSTALL_DATA_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADUSER_INTERNAL_LOCATION" host 2>/dev/null`
+    INSTALL_DATA_HOSTNAME=${INSTALL_DATA_HOSTNAME:-127.0.0.2}
+    read_option INSTALL_DATA_HOSTNAME       "AdUser domain (data API)" 1
 else
     ADUSER_ENDPOINT="https://example.com/"
     read_option ADUSER_ENDPOINT "External aduser service endpoint" 1
@@ -103,16 +103,17 @@ read_option INSTALL_ADSERVER_CRON "Install adserver cronjob?" 0 1
 
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]]
 then
-    ADUSER_EXTERNAL_LOCATION="${INSTALL_SCHEME}://$INSTALL_HOSTNAME/_aduser/"
-    ADUSER_INTERNAL_LOCATION="${INSTALL_SCHEME}://$INSTALL_HOSTNAME/_aduser/"
+    ADUSER_EXTERNAL_LOCATION="${INSTALL_SCHEME}://$INSTALL_DATA_HOSTNAME"
+    ADUSER_INTERNAL_LOCATION="$ADUSER_EXTERNAL_LOCATION"
 
-    read_env ${VENDOR_DIR}/aduser/.env || read_env ${VENDOR_DIR}/aduser/.env.dist
+    read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env.dist
 
-    ADUSER_PORT=8004
-    ADUSER_INTERFACE=127.0.0.1
-    ADUSER_PIXEL_PATH=register
+    read_option RECAPTCHA_SITE_KEY "Google reCAPTCHA v3 site key" 1
+    read_option RECAPTCHA_SECRET_KEY "Google reCAPTCHA v3 secret key" 1
 
-    save_env ${VENDOR_DIR}/aduser/.env.dist ${VENDOR_DIR}/aduser/.env || echo "Skipped aduser/.env"
+    APP_HOST=${INSTALL_DATA_HOSTNAME}
+
+    save_env ${VENDOR_DIR}/aduser/.env.dist ${VENDOR_DIR}/aduser/.env.local
 fi
 
 if [[ "${INSTALL_ADSELECT^^}" == "Y" ]]
@@ -147,13 +148,13 @@ then
     unset APP_ENV
 
     APP_HOST=${INSTALL_HOSTNAME}
-    APP_PORT=80
 
     read_env ${VENDOR_DIR}/adpanel/.env || read_env ${VENDOR_DIR}/adpanel/.env.dist
 
     save_env ${VENDOR_DIR}/adpanel/.env.dist ${VENDOR_DIR}/adpanel/.env
 fi
 
-export APP_HOST=${INSTALL_API_HOSTNAME}
-export APP_PORT=80
+APP_HOST=${INSTALL_API_HOSTNAME}
+read_option ADSHARES_LICENCE_KEY "Adshares Network Licence Key" 1
+
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env

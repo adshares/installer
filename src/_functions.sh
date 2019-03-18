@@ -11,7 +11,7 @@ read_option () {
     eval $( echo PREV=\$${1} )
     local MAXLENGTH=${4:-0}
 
-    if [ $3 -gt 0 ]
+    if [ ${3:-0} -gt 0 ]
     then
         read -e -p "${2}: " -i "${PREV}" -n $MAXLENGTH ${1}
     else
