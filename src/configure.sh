@@ -8,10 +8,10 @@ read_env ${VENDOR_DIR}/adserver/.env || read_env ${VENDOR_DIR}/adserver/.env.dis
 INSTALL_SCHEME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADPANEL_URL" scheme 2>/dev/null`
 
 INSTALL_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADPANEL_URL" host 2>/dev/null`
-INSTALL_HOSTNAME=${INSTALL_HOSTNAME:-localhost}
+INSTALL_HOSTNAME=${INSTALL_HOSTNAME:-127.0.0.1}
 
 INSTALL_API_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$APP_URL" host 2>/dev/null`
-INSTALL_API_HOSTNAME=${INSTALL_API_HOSTNAME:-127.0.0.1}
+INSTALL_API_HOSTNAME=${INSTALL_API_HOSTNAME:-127.0.0.2}
 
 read_option INSTALL_HOSTNAME       "AdPanel domain (UI for advertisers and publishers)" 1
 read_option INSTALL_API_HOSTNAME   "AdServer domain (serving banners)" 1
@@ -61,7 +61,7 @@ read_option INSTALL_ADUSER "Install local aduser service?" 0 1
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]]
 then
     INSTALL_DATA_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADUSER_INTERNAL_LOCATION" host 2>/dev/null`
-    INSTALL_DATA_HOSTNAME=${INSTALL_DATA_HOSTNAME:-127.0.0.2}
+    INSTALL_DATA_HOSTNAME=${INSTALL_DATA_HOSTNAME:-127.0.0.3}
     read_option INSTALL_DATA_HOSTNAME       "AdUser domain (data API)" 1
 else
     ADUSER_ENDPOINT="https://gitoku.com/"
