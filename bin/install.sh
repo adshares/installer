@@ -2,8 +2,8 @@
 
 #export DEBUG_MODE=1
 export SCRIPT_DIR=$(mktemp --directory)
-#SKIP_BOOTSTRAP=1
-#SKIP_CLONE=1
+SKIP_BOOTSTRAP=1
+SKIP_CLONE=1
 #SKIP_CONFIGURE=1
 
 SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
@@ -56,6 +56,7 @@ ${SCRIPT_DIR}/prepare-directories.sh
 if [[ ${SKIP_CONFIGURE:-0} -ne 1 ]]
 then
     sudo --preserve-env --user=${VENDOR_USER} ${SCRIPT_DIR}/configure.sh
+    SERVICES=$(cat ${SCRIPT_DIR}/services.txt)
 fi
 
 if [[ ${SKIP_SERVICES:-0} -ne 1 ]]

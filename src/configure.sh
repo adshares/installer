@@ -99,6 +99,8 @@ fi
 INSTALL_ADSERVER_CRON=Y
 read_option INSTALL_ADSERVER_CRON "Install adserver cronjob?" 0 1
 
+> ${SCRIPT_DIR}/services.txt
+
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]]
 then
     ADUSER_EXTERNAL_LOCATION="${INSTALL_SCHEME}://$INSTALL_DATA_HOSTNAME"
@@ -112,6 +114,8 @@ then
     APP_HOST=${INSTALL_DATA_HOSTNAME}
 
     save_env ${VENDOR_DIR}/aduser/.env.dist ${VENDOR_DIR}/aduser/.env.local
+
+    echo "aduser" | tee -a ${SCRIPT_DIR}/services.txt
 fi
 
 if [[ "${INSTALL_ADSELECT^^}" == "Y" ]]
@@ -124,6 +128,8 @@ then
     ADSELECT_SERVER_INTERFACE=127.0.0.1
 
     save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env
+
+    echo "adselect" | tee -a ${SCRIPT_DIR}/services.txt
 fi
 
 if [[ "${INSTALL_ADPAY^^}" == "Y" ]]
@@ -136,7 +142,11 @@ then
     ADPAY_SERVER_INTERFACE=127.0.0.1
 
     save_env ${VENDOR_DIR}/adpay/.env.dist ${VENDOR_DIR}/adpay/.env
+
+    echo "adpay" | tee -a ${SCRIPT_DIR}/services.txt
 fi
+
+echo "adserver" | tee -a ${SCRIPT_DIR}/services.txt
 
 if [[ "${INSTALL_ADPANEL^^}" == "Y" ]]
 then
@@ -149,9 +159,22 @@ then
     read_env ${VENDOR_DIR}/adpanel/.env || read_env ${VENDOR_DIR}/adpanel/.env.dist
 
     save_env ${VENDOR_DIR}/adpanel/.env.dist ${VENDOR_DIR}/adpanel/.env
+
+    echo "adpanel" | tee -a ${SCRIPT_DIR}/services.txt
 fi
 
 APP_HOST=${INSTALL_API_HOSTNAME}
 read_option ADSHARES_LICENCE_KEY "Adshares Network Licence Key" 1
 
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env
+
+#TODO: move somewhere else
+if [[ "${INSTALL_SCHEME^^}" == "HTTPS" ]]
+then
+    INSTALL_CERTBOT=Y
+    read_option INSTALL_CERTBOT "Do you want to setup SSL using Let's Encrypt / certbot" 0 1
+    if [[ "${INSTALL_CERTBOT^^}" == "Y" ]]
+    then
+        certbot --nginx
+    fi
+fi
