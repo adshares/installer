@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 source $(dirname $(readlink -f "$0"))/_functions.sh --vendor
 
+if [[ -f ${VENDOR_CONFIG} ]]
+then
+    source ${VENDOR_CONFIG}
+fi
+
 read_env ${VENDOR_DIR}/adserver/.env || read_env ${VENDOR_DIR}/adserver/.env.dist
 
 INSTALL_SCHEME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADPANEL_URL" scheme 2>/dev/null`
@@ -168,13 +173,17 @@ read_option ADSHARES_LICENCE_KEY "Adshares Network Licence Key" 1
 
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env
 
-#TODO: move somewhere else
+INSTALL_CERT_NGINX=${INSTALL_CERT_NGINX:-0}
 if [[ "${INSTALL_SCHEME^^}" == "HTTPS" ]]
 then
     INSTALL_CERTBOT=Y
     read_option INSTALL_CERTBOT "Do you want to setup SSL using Let's Encrypt / certbot" 0 1
     if [[ "${INSTALL_CERTBOT^^}" == "Y" ]]
     then
-        certbot --nginx
+        INSTALL_CERT_NGINX=1
     fi
 fi
+
+{
+echo "INSTALL_CERT_NGINX=$INSTALL_CERT_NGINX"
+} | tee ${VENDOR_CONFIG}

@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-#export DEBUG_MODE=1
 export SCRIPT_DIR=$(mktemp --directory)
-SKIP_BOOTSTRAP=1
-SKIP_CLONE=1
-#SKIP_CONFIGURE=1
 
 SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
 source ${SRC_DIR}/_functions.sh --root
@@ -75,5 +71,12 @@ then
 fi
 
 ${SCRIPT_DIR}/configure-daemon.sh fpm-pool ${SCRIPT_DIR} /etc/php/7.2/fpm/pool.d php7.2-fpm
+
+source ${VENDOR_CONFIG}
+
+if [[ ${INSTALL_CERT_NGINX:-0} -eq 1 ]]
+then
+    certbot --nginx
+fi
 
 rm -rf ${SCRIPT_DIR}
