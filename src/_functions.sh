@@ -1,8 +1,44 @@
 #!/dev/null
-set -e
 
 test ${_FUNCTIONS_FILE_WAS_LOADED:-0} -eq 1 && echo "Functions file was already loaded" >&2 && exit 127
 _FUNCTIONS_FILE_WAS_LOADED=1
+
+function versionFromGit {
+    local GIT_TAG=$(git tag --list --points-at HEAD | head --lines 1)
+    local GIT_HASH="#"$(git rev-parse --short HEAD)
+    echo ${1:-${GIT_TAG:-${GIT_HASH}}}
+}
+
+function showVars {
+    if [[ ${1:-0} -eq 1 ]]
+    then
+        shift
+
+        echo ""
+        echo "# ==="
+        echo "#"
+        echo "# `readlink -f "$0"` $*"
+        echo "#"
+        echo "# `id`"
+        echo "#"
+        echo "# SERVICE_NAME: $SERVICE_NAME"
+        echo "#  SERVICE_DIR: $SERVICE_DIR"
+        echo "#"
+        echo "# VENDOR_NAME=$VENDOR_NAME"
+        echo "# VENDOR_USER=$VENDOR_USER"
+        echo "#  VENDOR_DIR=$VENDOR_DIR"
+        echo "#"
+        echo "# BACKUP_DIR=$BACKUP_DIR"
+        echo "#   DATA_DIR=$DATA_DIR"
+        echo "#    LOG_DIR=$LOG_DIR"
+        echo "#    RUN_DIR=$RUN_DIR"
+        echo "#"
+        echo "# SCRIPT_DIR=$SCRIPT_DIR"
+        echo "#        PWD=$PWD"
+        echo "# ==="
+        echo ""
+    fi
+}
 
 # read_option opt_name, prompt, prefill, maxlength
 read_option () {
@@ -63,69 +99,57 @@ RUN_DIR=${RUN_DIR:-"/var/run/${VENDOR_NAME}"}
 SCRIPT_DIR=${SCRIPT_DIR:-"${VENDOR_DIR}/.script"}
 
 SERVICE_NAME=${SERVICE_NAME:-$(basename ${PWD})}
-if [[ "$SERVICE_NAME" == "root" || "$SERVICE_NAME" == "$VENDOR_NAME" ]]
+if [[ "$SERVICE_NAME" == "root" || "$SERVICE_NAME" == "$VENDOR_NAME" || "$SERVICE_NAME" == "$SUDO_USER" ]]
 then
     SERVICE_NAME=`basename ${SCRIPT_DIR}`
 fi
 
 SERVICE_DIR="$VENDOR_DIR/$SERVICE_NAME"
 
-#===
+showVars ${DEBUG_MODE:-0} "$@"
 
-_REQUIRED_USER_TYPE=${1:-"regular"}
+# ===
 
-if [[ "$_REQUIRED_USER_TYPE" != "any" ]]
-then
-    if [[ "$_REQUIRED_USER_TYPE" == "root" ]]
-    then
-        if [[ $EUID -ne 0 ]]
-        then
-            echo "You need to be root to run $0" >&2
-            exit 1
-        fi
-    elif [[ "$_REQUIRED_USER_TYPE" != "root" ]]
-    then
-        if  [[ $EUID -eq 0 ]]
-        then
-            echo "You cannot be root to run $0" >&2
-            exit 2
-        elif [[ `id --user --name` != "$VENDOR_USER" ]]
-        then
-            echo "You need to be $VENDOR_USER to run $0" >&2
-            id
-            exit 3
-        fi
-    fi
-fi
+while [[ ${1:-""} != "" ]]
+do
+    echo "$1"
+    case "$1" in
+        -u | --allowed-user )
+            [[ ${2:-""} == "" ]] && echo "$0 - ERROR: Missing user name." >&2 && exit 127
 
-unset _REQUIRED_USER_TYPE
+            shift
 
-#===
+            echo "$1"
 
-set -u
+            if [[ "$1" == "root" ]]
+            then
+                if [[ $EUID -ne 0 ]]
+                then
+                    echo "You need to be root to run $0" >&2
+                    exit 126
+                fi
+            else
+                if  [[ $EUID -eq 0 ]]
+                then
+                    echo "You cannot be root to run $0" >&2
+                    exit 125
+                elif [[ `id --user --name` != "$2" ]]
+                then
+                    echo "You need to be '$1' to run $0" >&2
+                    exit 124
+                fi
+            fi
+        ;;
+        --force )
+            OPT_FORCE=1
+        ;;
+        -- )
+            shift
+            break
+        ;;
+    esac
+    shift
+done
 
-if [[ ${DEBUG_MODE:-0} -eq 1 ]]
-then
-    echo ""
-    echo "# ==="
-    echo "#"
-    echo "# $0 $*"
-    echo "#"
-    echo "# --- #"
-    echo "# `id`"
-    echo "# SERVICE_NAME: $SERVICE_NAME"
-    echo "#  SERVICE_DIR: $SERVICE_DIR"
-    echo "#"
-    echo "# VENDOR_NAME=$VENDOR_NAME"
-    echo "# VENDOR_USER=$VENDOR_USER"
-    echo "#  VENDOR_DIR=$VENDOR_DIR"
-    echo "#"
-    echo "# BACKUP_DIR=$BACKUP_DIR"
-    echo "#   DATA_DIR=$DATA_DIR"
-    echo "#    LOG_DIR=$LOG_DIR"
-    echo "#    RUN_DIR=$RUN_DIR"
-    echo "#"
-    echo "# SCRIPT_DIR=$SCRIPT_DIR"
-    echo "#        PWD=$PWD"
-    echo "# --- #"
-fi
+set -- "$@"
+set -eu

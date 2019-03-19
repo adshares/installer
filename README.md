@@ -7,7 +7,7 @@
 To install Adshares AdServer, just run 
 
 ```
-bin/install.sh
+./install.sh
 ```
 
 and follow through all the steps.

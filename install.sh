@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-set -e
 
-export DEBUG_MODE=1
+export DEBUG_MODE=0
 export SCRIPT_DIR=$(mktemp --directory)
 SKIP_BOOTSTRAP=1
 
-SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
-source ${SRC_DIR}/_functions.sh root
+SRC_DIR=$(dirname $(readlink -f "$0"))/src
+source ${SRC_DIR}/_functions.sh --allowed-user root "$@"
+
 cp -r ${SRC_DIR}/* ${SCRIPT_DIR}
 
 if [[ -z ${1:-""} ]]
