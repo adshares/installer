@@ -106,28 +106,29 @@ DB_PASSWORD=${VENDOR_NAME}
 
 DB_DATABASES=(adserver aduser)
 
-for DB_DATABASE in "${DB_DATABASES[*]}"
+for DB_DATABASE in ${DB_DATABASES[@]}
 do
-mysql=( mysql --user=root )
-
-if [[ "$DB_DATABASE" ]]
-then
-    echo "CREATE DATABASE IF NOT EXISTS \`$DB_DATABASE\`;" | "${mysql[@]}"
-    mysql+=( "$DB_DATABASE" )
-fi
-
-if [[ "$DB_USERNAME" && "$DB_PASSWORD" ]]
-then
-    echo "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'%' IDENTIFIED BY '$DB_PASSWORD';" | "${mysql[@]}"
+    mysql=( mysql --user=root )
 
     if [[ "$DB_DATABASE" ]]
     then
-        echo "GRANT ALL ON \`$DB_DATABASE\`.* TO '$DB_USERNAME'@'%';" | "${mysql[@]}"
+        echo "CREATE DATABASE IF NOT EXISTS \`$DB_DATABASE\`;" | "${mysql[@]}"
+        mysql+=( "$DB_DATABASE" )
     fi
 
-    echo 'FLUSH PRIVILEGES;' | "${mysql[@]}"
-fi
+    if [[ "$DB_USERNAME" && "$DB_PASSWORD" ]]
+    then
+        echo "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'%' IDENTIFIED BY '$DB_PASSWORD';" | "${mysql[@]}"
+
+        if [[ "$DB_DATABASE" ]]
+        then
+            echo "GRANT ALL ON \`$DB_DATABASE\`.* TO '$DB_USERNAME'@'%';" | "${mysql[@]}"
+        fi
+
+        echo 'FLUSH PRIVILEGES;' | "${mysql[@]}"
+    fi
 done
+
 # ===
 
 crontab -r &> /dev/null || echo "No crontab to remove"

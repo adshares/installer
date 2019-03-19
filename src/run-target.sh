@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 source $(dirname $(readlink -f "$0"))/_functions.sh
+echo " > $0 $*"
 
 TARGET="$1"
 shift
