@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-export DEBUG_MODE=0
+#export DEBUG_MODE=1
 export SCRIPT_DIR=$(mktemp --directory)
 SKIP_BOOTSTRAP=1
+SKIP_CLONE=1
+SKIP_CONFIGURE=1
 
-SRC_DIR=$(dirname $(readlink -f "$0"))/src
-source ${SRC_DIR}/_functions.sh --allowed-user root "$@"
+SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
+source ${SRC_DIR}/_functions.sh --root
 
 cp -r ${SRC_DIR}/* ${SCRIPT_DIR}
 
@@ -64,13 +66,11 @@ then
 
         if [[ -e ${VENDOR_DIR}/${SERVICE}/.env ]]
         then
-            cat ${VENDOR_DIR}/${SERVICE}/.env
-
-            ${SCRIPT_DIR}/run-target.sh stop ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
+            ${SCRIPT_DIR}/run-target.sh stop ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
 
             ${SCRIPT_DIR}/run-target.sh build ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
 
-            ${SCRIPT_DIR}/run-target.sh start ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
+            ${SCRIPT_DIR}/run-target.sh start ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
 
             ${SCRIPT_DIR}/configure-daemon.sh nginx ${VENDOR_DIR}/${SERVICE}/deploy
             ${SCRIPT_DIR}/configure-daemon.sh supervisor ${VENDOR_DIR}/${SERVICE}/deploy

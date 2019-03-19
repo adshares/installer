@@ -1,19 +1,14 @@
 #!/usr/bin/env bash
-set -e
+source $(dirname $(readlink -f "$0"))/_functions.sh
 
-echo "## Run: $*"
-
-[[ $# -ge 1 ]] || echo "Usage: `basename $0` <target> [[[<SCRIPT_DIR>] <sudo_as>] ...]"
 TARGET="$1"
 shift
 
-SCRIPT_DIR="$1"
-test -z $1 || shift
+SCRIPT_DIR=${1:-""}
+test -z ${1:-""} || shift
 
-SUDO_AS="$1"
-test -z $1 || shift
-
-source $(dirname $(readlink -f "$0"))/_functions.sh any
+SUDO_AS=${1:-""}
+test -z ${1:-""} || shift
 
 FILE_COUNT=$(find ${SCRIPT_DIR} -maxdepth 1 -name "${TARGET}*.sh" -type f -print | wc -l)
 FILE_ITEMS=$(find ${SCRIPT_DIR} -maxdepth 1 -name "${TARGET}*.sh" -type f -print)

@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-set -e
-
-[[ $# -ge 2 ]] || echo "Usage: `basename $0` <daemon_name> <source_dir> [<target_dir>]"
+source $(dirname $(readlink -f "$0"))/_functions.sh --root
 
 DAEMON_NAME="$1"
 shift
@@ -10,12 +8,10 @@ SOURCE_DIR="$1"
 shift
 
 TARGET_DIR=${1:-"/etc/${DAEMON_NAME}/conf.d"}
-test -z $1 || shift
+test -z ${1:-""} || shift
 
 DAEMON_SERVICE_NAME=${1:-${DAEMON_NAME}}
-test -z $1 || shift
-
-source $(dirname $(readlink -f "$0"))/_functions.sh root
+test -z ${1:-""} || shift
 
 echo "Remove ${SERVICE_NAME}-${DAEMON_NAME}*.conf from ${DAEMON_NAME} (if any exist)"
 find  ${TARGET_DIR} -maxdepth 1 -name "${SERVICE_NAME}-${DAEMON_NAME}*.conf" -type f -delete

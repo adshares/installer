@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-set -e
-
-source $(dirname $(readlink -f "$0"))/_functions.sh root
+source $(dirname $(readlink -f "$0"))/_functions.sh --root
 
 export DEBIAN_FRONTEND=noninteractive
 

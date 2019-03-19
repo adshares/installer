@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-set -e
-
-HERE=$(dirname $(readlink -f "$0"))
-source ${HERE}/_functions.sh root
+source $(dirname $(readlink -f "$0"))/_functions.sh --root
 
 #===
 

@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-set -e
-
-source $(dirname $(readlink -f "$0"))/_functions.sh
+source $(dirname $(readlink -f "$0"))/_functions.sh --vendor
 
 read_env ${VENDOR_DIR}/adserver/.env || read_env ${VENDOR_DIR}/adserver/.env.dist
 

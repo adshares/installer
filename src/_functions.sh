@@ -10,10 +10,8 @@ function versionFromGit {
 }
 
 function showVars {
-    if [[ ${1:-0} -eq 1 ]]
+    if [[ ${DEBUG_MODE:-0} -eq 1 ]]
     then
-        shift
-
         echo ""
         echo "# ==="
         echo "#"
@@ -106,38 +104,32 @@ fi
 
 SERVICE_DIR="$VENDOR_DIR/$SERVICE_NAME"
 
-showVars ${DEBUG_MODE:-0} "$@"
+showVars "$@"
 
 # ===
 
+_ARGS=()
 while [[ ${1:-""} != "" ]]
 do
-    echo "$1"
     case "$1" in
-        -u | --allowed-user )
-            [[ ${2:-""} == "" ]] && echo "$0 - ERROR: Missing user name." >&2 && exit 127
-
-            shift
-
-            echo "$1"
-
-            if [[ "$1" == "root" ]]
+        --root )
+            if [[ $EUID -ne 0 ]]
             then
-                if [[ $EUID -ne 0 ]]
-                then
-                    echo "You need to be root to run $0" >&2
-                    exit 126
-                fi
-            else
-                if  [[ $EUID -eq 0 ]]
-                then
-                    echo "You cannot be root to run $0" >&2
-                    exit 125
-                elif [[ `id --user --name` != "$2" ]]
-                then
-                    echo "You need to be '$1' to run $0" >&2
-                    exit 124
-                fi
+                echo "You need to be root to run $0" >&2
+                exit 126
+            fi
+        ;;
+        --vendor )
+            if  [[ $EUID -eq 0 ]]
+            then
+                echo "You cannot be root to run $0" >&2
+                exit 125
+            fi
+
+            if [[ `id --user --name` != ${VENDOR_USER} ]]
+            then
+                echo "You need to be '$VENDOR_USER' to run $0" >&2
+                exit 124
             fi
         ;;
         --force )
@@ -147,9 +139,20 @@ do
             shift
             break
         ;;
+        * )
+            _ARGS+=("$1")
+        ;;
     esac
     shift
 done
 
-set -- "$@"
+if [[ ${#_ARGS[@]} -gt 0 ]]
+then
+    set -- ${_ARGS[@]}
+fi
+
+unset _ARGS
+
+# ===
+
 set -eu
