@@ -99,7 +99,7 @@ if [[ "${INSTALL_ADPANEL^^}" != "Y" ]]
 then
     ADPANEL_ENDPOINT="https://example.com"
     read_option ADPANEL_ENDPOINT "External adselect service endpoint" 1
-
+else
     read_option ADPANEL_BRAND_ASSETS_DIR "Directory where custom brand assets are stored. If do not exist, standard will be used" 1
     if [ ! -d "${ADPANEL_BRAND_ASSETS_DIR}" ]
     then
