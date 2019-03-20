@@ -170,6 +170,8 @@ then
 
     read_env ${VENDOR_DIR}/adpanel/.env || read_env ${VENDOR_DIR}/adpanel/.env.dist
 
+    BRAND_ASSETS_DIR=${ADPANEL_BRAND_ASSETS_DIR:-""}
+
     save_env ${VENDOR_DIR}/adpanel/.env.dist ${VENDOR_DIR}/adpanel/.env
 
     echo "adpanel" | tee -a ${SCRIPT_DIR}/services.txt
