@@ -34,13 +34,13 @@ then
     do
         if [[ "$SERVICE" == "aduser" ]]
         then
-            ${SCRIPT_DIR}/clone.sh ${SERVICE} deploy
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
         elif [[ "$SERVICE" == "adserver" ]]
         then
             ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
         elif [[ "$SERVICE" == "adpanel" ]]
         then
-            ${SCRIPT_DIR}/clone.sh ${SERVICE} deploy
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
         else
             ${SCRIPT_DIR}/clone.sh ${SERVICE} ${BRANCH}
         fi
