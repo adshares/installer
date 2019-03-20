@@ -38,19 +38,40 @@ function showVars {
     fi
 }
 
+# readOption <name> [<message> [<max_length>]]
+function readOption {
+    local DEFAULT=${!1}
+    local MESSAGE=${2:-""}
+    local MAX_LENGTH=${3:-0}
+
+    if [[ ${MAX_LENGTH} -eq 1 ]]
+    then
+        local REPLY
+        read -e -p "${MESSAGE} [${DEFAULT}]: " -n ${MAX_LENGTH} REPLY
+        if [[ ! -z $REPLY ]]
+        then
+            eval $( echo ${1}=\$REPLY )
+        fi
+    else
+        read -e -p "${MESSAGE}: " -i "${DEFAULT}" -n ${MAX_LENGTH} ${1}
+    fi
+}
+
+
 # read_option opt_name, prompt, prefill, maxlength
 read_option () {
     local PREV
-    local REPLY
     eval $( echo PREV=\$${1} )
-    local MAXLENGTH=${4:-0}
 
-    if [ ${3:-0} -gt 0 ]
+    local MAXLENGTH=${4:-0}
+    local REPLY
+
+    if [[ ${3:-0} -eq 1 ]]
     then
-        read -e -p "${2}: " -i "${PREV}" -n $MAXLENGTH ${1}
+        read -e -p "${2}: " -i "${PREV}" -n ${MAXLENGTH} ${1}
     else
-        read -e -p "${2} [$PREV]: " -n $MAXLENGTH REPLY
-        if [ ! -z $REPLY ]
+        read -e -p "${2} [$PREV]: " -n ${MAXLENGTH} REPLY
+        if [[ ! -z $REPLY ]]
         then
             eval $( echo ${1}=\$REPLY )
         fi
