@@ -37,7 +37,7 @@ then
             ${SCRIPT_DIR}/clone.sh ${SERVICE} deploy
         elif [[ "$SERVICE" == "adserver" ]]
         then
-            ${SCRIPT_DIR}/clone.sh ${SERVICE} deploy
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
         elif [[ "$SERVICE" == "adpanel" ]]
         then
             ${SCRIPT_DIR}/clone.sh ${SERVICE} deploy
