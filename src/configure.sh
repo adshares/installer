@@ -99,6 +99,12 @@ if [[ "${INSTALL_ADPANEL^^}" != "Y" ]]
 then
     ADPANEL_ENDPOINT="https://example.com"
     read_option ADPANEL_ENDPOINT "External adselect service endpoint" 1
+
+    read_option ADPANEL_BRAND_ASSETS_DIR "Directory where custom brand assets are stored. If do not exist, standard will be used" 1
+    if [ ! -d "${ADPANEL_BRAND_ASSETS_DIR}" ]
+    then
+        echo "Directory ${ADPANEL_BRAND_ASSETS_DIR} doesn't exist."
+    fi
 fi
 
 INSTALL_ADSERVER_CRON=Y
@@ -186,4 +192,5 @@ fi
 
 {
 echo "INSTALL_CERT_NGINX=$INSTALL_CERT_NGINX"
+echo "ADPANEL_BRAND_ASSETS_DIR=$ADPANEL_BRAND_ASSETS_DIR"
 } | tee ${VENDOR_CONFIG}
