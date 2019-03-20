@@ -102,7 +102,7 @@ then
 else
     ADPANEL_BRAND_ASSETS_DIR=${ADPANEL_BRAND_ASSETS_DIR:-""}
     read_option ADPANEL_BRAND_ASSETS_DIR "Directory where custom brand assets are stored. If dir does not exist, standard assets will be used" 1
-    if [ ! -d "${ADPANEL_BRAND_ASSETS_DIR}" ]
+    if [[ ! -d "${ADPANEL_BRAND_ASSETS_DIR}" ]]
     then
         echo "Directory ${ADPANEL_BRAND_ASSETS_DIR} doesn't exist."
     fi
