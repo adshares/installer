@@ -45,6 +45,8 @@ then
         else
             ${SCRIPT_DIR}/clone.sh ${SERVICE} ${BRANCH}
         fi
+
+        [[ -e ${CONFIG_DIR}/${SERVICE}.env ]] && cp -n ${CONFIG_DIR}/${SERVICE}.env ${VENDOR_DIR}/${SERVICE}/.env
     done
 fi
 
@@ -65,7 +67,9 @@ then
         export SERVICE_NAME=${SERVICE}
 
         ${SCRIPT_DIR}/run-target.sh stop ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
+
         ${SCRIPT_DIR}/run-target.sh build ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
+
         ${SCRIPT_DIR}/run-target.sh start ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
 
         ${SCRIPT_DIR}/configure-daemon.sh nginx ${VENDOR_DIR}/${SERVICE}/deploy
