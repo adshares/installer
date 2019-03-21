@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 source $(dirname $(readlink -f "$0"))/_functions.sh --root
+echo " > $0 $*"
 
 export DEBIAN_FRONTEND=noninteractive
 

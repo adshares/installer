@@ -1,28 +1,31 @@
 #!/usr/bin/env bash
-source $(dirname $(readlink -f "$0"))/_functions.sh --vendor
+source $(dirname $(readlink -f "$0"))/_functions.sh --root
+echo " > $0 $*"
 
-if [[ -f ${VENDOR_CONFIG} ]]
+CONFIG_FILE=${ETC_DIR}/config.env
+if [[ -f ${CONFIG_FILE} ]]
 then
-    source ${VENDOR_CONFIG}
+    cat ${CONFIG_FILE}
+    set -a
+    source ${CONFIG_FILE}
+    set +a
 fi
 
 read_env ${VENDOR_DIR}/adserver/.env || read_env ${VENDOR_DIR}/adserver/.env.dist
 
 INSTALL_SCHEME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADPANEL_URL" scheme 2>/dev/null`
-
 INSTALL_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADPANEL_URL" host 2>/dev/null`
 INSTALL_HOSTNAME=${INSTALL_HOSTNAME:-127.0.0.1}
-
 INSTALL_API_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$APP_URL" host 2>/dev/null`
 INSTALL_API_HOSTNAME=${INSTALL_API_HOSTNAME:-127.0.0.2}
 
 read_option INSTALL_HOSTNAME       "AdPanel domain (UI for advertisers and publishers)" 1
 read_option INSTALL_API_HOSTNAME   "AdServer domain (serving banners)" 1
 
-USE_HTTPS=N
-read_option USE_HTTPS "Configure for HTTPS?" 0 1
+configDefault USE_HTTPS N INSTALL
+read_option INSTALL_USE_HTTPS "Configure for HTTPS?" 0 1
 
-if [[ "${USE_HTTPS^^}" == "Y" ]]
+if [[ "${INSTALL_USE_HTTPS^^}" == "Y" ]]
 then
     INSTALL_SCHEME=https
     BANNER_FORCE_HTTPS=true
@@ -58,7 +61,7 @@ read_option MAIL_PASSWORD "mail smtp password" 1
 read_option MAIL_FROM_ADDRESS "mail from address" 1
 read_option MAIL_FROM_NAME "mail from name" 1
 
-INSTALL_ADUSER=N
+configDefault INSTALL_ADUSER N
 read_option INSTALL_ADUSER "Install local aduser service?" 0 1
 
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]]
@@ -74,7 +77,7 @@ else
     ADUSER_EXTERNAL_LOCATION="$ADUSER_ENDPOINT"
 fi
 
-INSTALL_ADSELECT=Y
+configDefault INSTALL_ADSELECT Y
 read_option INSTALL_ADSELECT "Install local adselect service?" 0 1
 
 if [[ "${INSTALL_ADSELECT^^}" != "Y" ]]
@@ -83,7 +86,7 @@ then
     read_option ADSELECT_ENDPOINT "External adselect service endpoint" 1
 fi
 
-INSTALL_ADPAY=Y
+configDefault INSTALL_ADPAY Y
 read_option INSTALL_ADPAY "Install local adpay service?" 0 1
 
 if [[ "${INSTALL_ADPAY^^}" != "Y" ]]
@@ -92,7 +95,7 @@ then
     read_option ADPAY_ENDPOINT "External adselect service endpoint" 1
 fi
 
-INSTALL_ADPANEL=Y
+configDefault INSTALL_ADPANEL Y
 read_option INSTALL_ADPANEL "Install local adpanel service?" 0 1
 
 if [[ "${INSTALL_ADPANEL^^}" != "Y" ]]
@@ -108,7 +111,7 @@ else
     fi
 fi
 
-INSTALL_ADSERVER_CRON=Y
+configDefault INSTALL_ADSERVER_CRON Y
 read_option INSTALL_ADSERVER_CRON "Install adserver cronjob?" 0 1
 
 > ${SCRIPT_DIR}/services.txt
@@ -178,14 +181,19 @@ then
 fi
 
 APP_HOST=${INSTALL_API_HOSTNAME}
-read_option ADSHARES_LICENCE_KEY "Adshares Network Licence Key" 1
 
+configDefault ADSHARES_LICENCE_KEY "" INSTALL
+
+read_option INSTALL_ADSHARES_LICENCE_KEY "Adshares Network Licence Key" 1
+
+MAIL_DRIVER=log
+LOG_FILE_PATH=${LOG_DIR}/adserver.log
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env
 
-INSTALL_CERT_NGINX=${INSTALL_CERT_NGINX:-0}
+configDefault INSTALL_CERT_NGINX 0
 if [[ "${INSTALL_SCHEME^^}" == "HTTPS" ]]
 then
-    INSTALL_CERTBOT=Y
+    INSTALL_CERTBOT=N
     read_option INSTALL_CERTBOT "Do you want to setup SSL using Let's Encrypt / certbot" 0 1
     if [[ "${INSTALL_CERTBOT^^}" == "Y" ]]
     then
@@ -193,7 +201,4 @@ then
     fi
 fi
 
-{
-echo "INSTALL_CERT_NGINX=$INSTALL_CERT_NGINX"
-echo "ADPANEL_BRAND_ASSETS_DIR=$ADPANEL_BRAND_ASSETS_DIR"
-} | tee ${VENDOR_CONFIG}
+configVars | tee ${CONFIG_FILE}

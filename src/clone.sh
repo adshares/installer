@@ -6,6 +6,7 @@ VENDOR_DIR=${VENDOR_DIR:-$3}
 GIT_REPO_BASE_URL=${GIT_REPO_BASE_URL:-${4:-https://github.com/adshares}}
 
 source $(dirname $(readlink -f "$0"))/_functions.sh
+echo " > $0 $*"
 
 test -z ${SERVICE_NAME} && echo "Missing SERVICE_NAME" >&2 && exit 1
 test -z ${VENDOR_DIR} && echo "Missing VENDOR_DIR" >&2 && exit 1

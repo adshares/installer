@@ -6,6 +6,7 @@ SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
 source ${SRC_DIR}/_functions.sh --root
 
 cp -r ${SRC_DIR}/* ${SCRIPT_DIR}
+chmod +x ${SCRIPT_DIR}/*.sh
 
 if [[ -z ${1:-""} ]]
 then
@@ -51,9 +52,11 @@ ${SCRIPT_DIR}/prepare-directories.sh
 
 if [[ ${SKIP_CONFIGURE:-0} -ne 1 ]]
 then
-    sudo --preserve-env --user=${VENDOR_USER} ${SCRIPT_DIR}/configure.sh
+    ${SCRIPT_DIR}/configure.sh
     SERVICES=$(cat ${SCRIPT_DIR}/services.txt)
 fi
+
+${SCRIPT_DIR}/prepare-directories.sh
 
 if [[ ${SKIP_SERVICES:-0} -ne 1 ]]
 then
@@ -70,9 +73,12 @@ then
     done
 fi
 
+export SERVICE_NAME=${VENDOR_NAME}
 ${SCRIPT_DIR}/configure-daemon.sh fpm-pool ${SCRIPT_DIR} /etc/php/7.2/fpm/pool.d php7.2-fpm
 
-source ${VENDOR_CONFIG}
+CONFIG_FILE=${ETC_DIR}/config.env
+
+source ${CONFIG_FILE}
 
 if [[ ${INSTALL_CERT_NGINX:-0} -eq 1 ]]
 then

@@ -28,9 +28,11 @@ function showVars {
         echo "#"
         echo "# BACKUP_DIR=$BACKUP_DIR"
         echo "#   DATA_DIR=$DATA_DIR"
+        echo "#    ETC_DIR=$ETC_DIR"
         echo "#    LOG_DIR=$LOG_DIR"
         echo "#    RUN_DIR=$RUN_DIR"
         echo "#"
+        echo "# CONFIG_DIR=$CONFIG_DIR"
         echo "# SCRIPT_DIR=$SCRIPT_DIR"
         echo "#        PWD=$PWD"
         echo "# ==="
@@ -38,25 +40,62 @@ function showVars {
     fi
 }
 
-# readOption <name> [<message> [<max_length>]]
+# Usage: readOption <name> [<message> [<max_length>]]
 function readOption {
-    local DEFAULT=${!1}
+    local ORIGINAL=${!1}
     local MESSAGE=${2:-""}
     local MAX_LENGTH=${3:-0}
 
     if [[ ${MAX_LENGTH} -eq 1 ]]
     then
         local REPLY
-        read -e -p "${MESSAGE} [${DEFAULT}]: " -n ${MAX_LENGTH} REPLY
+        read -e -p "${MESSAGE} [${ORIGINAL}]: " -n ${MAX_LENGTH} REPLY
         if [[ ! -z $REPLY ]]
         then
             eval $( echo ${1}=\$REPLY )
         fi
     else
-        read -e -p "${MESSAGE}: " -i "${DEFAULT}" -n ${MAX_LENGTH} ${1}
+        read -e -p "${MESSAGE}: " -i "${ORIGINAL}" -n ${MAX_LENGTH} ${1}
     fi
 }
 
+# Usage: configDefault <var_name> [[<default_value>] <namespace>]
+function configDefault {
+    local PREFIX=${3:-""}
+    local VARNAME
+
+    if [[ -z ${PREFIX} ]]
+    then
+        VARNAME="${1}"
+    else
+        VARNAME="${PREFIX}_${1}"
+    fi
+
+    local ORIGINAL=${!VARNAME:-""}
+    local DEFAULT=${2:-""}
+
+    local VALUE
+    if [[ -z ${ORIGINAL} ]]
+    then
+        VALUE="$DEFAULT"
+    else
+        VALUE="$ORIGINAL"
+    fi
+
+    local _EXPR=$( echo ${VARNAME}=\$VALUE )
+    eval ${_EXPR}
+
+    _CONFIG_VARS+=(${VARNAME})
+}
+
+# Print like `env` would
+# Usage: configVars
+function configVars {
+    for VARNAME in ${_CONFIG_VARS[@]}
+    do
+        echo "${VARNAME}=${!VARNAME}"
+    done
+}
 
 # read_option opt_name, prompt, prefill, maxlength
 read_option () {
@@ -109,22 +148,21 @@ read_env() {
 VENDOR_NAME=${VENDOR_NAME:-"adshares"}
 VENDOR_USER=${VENDOR_USER:-"${VENDOR_NAME}"}
 VENDOR_DIR=${VENDOR_DIR:-"/opt/${VENDOR_NAME}"}
-VENDOR_CONFIG=${VENDOR_CONFIG:-"/opt/${VENDOR_NAME}/${VENDOR_NAME}.config"}
 
 BACKUP_DIR=${BACKUP_DIR:-"${VENDOR_DIR}/.backup"}
-DATA_DIR=${DATA_DIR:-"${VENDOR_DIR}/.data"}
+DATA_DIR=${DATA_DIR:-"/var/lib/${VENDOR_NAME}"}
+ETC_DIR=${ETC_DIR:-"/etc/${VENDOR_NAME}"}
 LOG_DIR=${LOG_DIR:-"/var/log/${VENDOR_NAME}"}
 RUN_DIR=${RUN_DIR:-"/var/run/${VENDOR_NAME}"}
-
 SCRIPT_DIR=${SCRIPT_DIR:-"${VENDOR_DIR}/.script"}
 
-SERVICE_NAME=${SERVICE_NAME:-$(basename ${PWD})}
-if [[ "$SERVICE_NAME" == "root" || "$SERVICE_NAME" == "$VENDOR_NAME" || "$SERVICE_NAME" == "$SUDO_USER" ]]
+CONFIG_DIR=${CONFIG_DIR:-"${ETC_DIR}/conf.d"}
+
+if [[ ${PWD} =~ ^${VENDOR_DIR}\/[^/]+ ]]
 then
     SERVICE_NAME=`basename ${SCRIPT_DIR}`
+    SERVICE_DIR="$VENDOR_DIR/$SERVICE_NAME"
 fi
-
-SERVICE_DIR="$VENDOR_DIR/$SERVICE_NAME"
 
 showVars "$@"
 
