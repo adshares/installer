@@ -123,10 +123,12 @@ then
 
     read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env.dist
 
+    APP_VERSION=$(versionFromGit ${VENDOR_DIR}/aduser)
+    APP_HOST=${INSTALL_DATA_HOSTNAME}
+    read_option APP_NAME "AdUser Service Name" 1
+
     read_option RECAPTCHA_SITE_KEY "Google reCAPTCHA v3 site key" 1
     read_option RECAPTCHA_SECRET_KEY "Google reCAPTCHA v3 secret key" 1
-
-    APP_HOST=${INSTALL_DATA_HOSTNAME}
 
     save_env ${VENDOR_DIR}/aduser/.env.dist ${VENDOR_DIR}/aduser/.env.local
 

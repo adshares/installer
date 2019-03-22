@@ -4,9 +4,16 @@ test ${_FUNCTIONS_FILE_WAS_LOADED:-0} -eq 1 && echo "Functions file was already 
 _FUNCTIONS_FILE_WAS_LOADED=1
 
 function versionFromGit {
-    local GIT_TAG=$(git tag --list --points-at HEAD | head --lines 1)
-    local GIT_HASH="#"$(git rev-parse --short HEAD)
-    echo ${1:-${GIT_TAG:-${GIT_HASH}}}
+    local _PWD
+    if [[ -z ${1:-""} ]]
+    then
+        _PWD="${PWD}"
+    else
+        _PWD="${1}"
+    fi
+    local GIT_TAG=$(git -C ${_PWD} tag --list --points-at HEAD | head --lines 1)
+    local GIT_HASH="#"$(git -C ${_PWD} rev-parse --short HEAD)
+    echo ${GIT_TAG:-${GIT_HASH}}
 }
 
 function showVars {
