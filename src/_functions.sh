@@ -168,8 +168,8 @@ CONFIG_DIR=${CONFIG_DIR:-"${ETC_DIR}/conf.d"}
 if [[ ${PWD} =~ ^${VENDOR_DIR}\/[^/]+ ]]
 then
     SERVICE_NAME=`basename ${SCRIPT_DIR}`
-    SERVICE_DIR="$VENDOR_DIR/$SERVICE_NAME"
 fi
+SERVICE_DIR="$VENDOR_DIR/$SERVICE_NAME"
 
 showVars "$@"
 
