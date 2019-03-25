@@ -22,8 +22,8 @@ then
         then
             ${FILE} $@
         else
-            env
-            sudo -E -i -u ${SUDO_AS} ${FILE} "$@"
+            env | sort | grep SERVICE_
+            sudo --preserve-env --login --login=${SUDO_AS} ${FILE} "$@"
         fi
     done
 fi
