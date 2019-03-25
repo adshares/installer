@@ -22,6 +22,7 @@ then
         then
             ${FILE} $@
         else
+            env
             sudo -E -i -u ${SUDO_AS} ${FILE} "$@"
         fi
     done
