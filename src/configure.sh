@@ -121,6 +121,7 @@ then
     ADUSER_EXTERNAL_LOCATION="${INSTALL_SCHEME}://$INSTALL_DATA_HOSTNAME"
     ADUSER_INTERNAL_LOCATION="$ADUSER_EXTERNAL_LOCATION"
 
+unset APP_NAME
     read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env.dist
 
     APP_VERSION=$(versionFromGit ${VENDOR_DIR}/aduser)
