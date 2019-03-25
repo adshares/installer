@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 export SCRIPT_DIR=$(mktemp --directory)
+export DEBUG_MODE=1
 
 SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
 source ${SRC_DIR}/_functions.sh --root
@@ -65,8 +66,6 @@ then
     for SERVICE in ${SERVICES}
     do
         export SERVICE_NAME=${SERVICE}
-
-export DEBUG_MODE=1
 
         ${SCRIPT_DIR}/run-target.sh stop ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
 
