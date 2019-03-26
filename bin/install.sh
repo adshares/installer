@@ -81,11 +81,17 @@ CONFIG_FILE=${ETC_DIR}/config.env
 
 source ${CONFIG_FILE}
 
-if [[ ${INSTALL_CERT_NGINX:-0} -eq 1 ]]
+if [[ ${INSTALL_CERTBOT_NGINX:-0} -eq 1 ]]
 then
-    certbot --nginx
+    set -x
+
+    [[ -z ${INSTALL_HOSTNAME} ]] || certbot --nginx --cert-name ${INSTALL_HOSTNAME} --domains ${INSTALL_HOSTNAME}
+    [[ -z ${INSTALL_API_HOSTNAME} ]] || certbot --nginx --cert-name ${INSTALL_API_HOSTNAME} --domains ${INSTALL_API_HOSTNAME}
+    [[ -z ${INSTALL_DATA_HOSTNAME} ]] || certbot --nginx --cert-name ${INSTALL_DATA_HOSTNAME} --domains ${INSTALL_DATA_HOSTNAME}
+
+    set +x
 fi
 
 rm -rf ${SCRIPT_DIR}
 
-echo "DONE"
+echo "=== DONE ==="

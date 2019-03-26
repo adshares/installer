@@ -74,6 +74,7 @@ else
 
     ADUSER_INTERNAL_LOCATION="$ADUSER_ENDPOINT"
     ADUSER_EXTERNAL_LOCATION="$ADUSER_ENDPOINT"
+    INSTALL_DATA_HOSTNAME=""
 fi
 
 configDefault ADSELECT Y INSTALL
@@ -192,18 +193,15 @@ MAIL_DRIVER=log
 LOG_FILE_PATH=${LOG_DIR}/adserver.log
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env
 
-configDefault CERT_NGINX 0 INSTALL
+configDefault CERTBOT_NGINX 0 INSTALL
 if [[ "${INSTALL_SCHEME^^}" == "HTTPS" ]]
 then
-    INSTALL_CERTBOT=N
-    read_option INSTALL_CERTBOT "Do you want to setup SSL using Let's Encrypt / certbot" 0 1
-    if [[ "${INSTALL_CERTBOT^^}" == "Y" ]]
-    then
-        INSTALL_CERT_NGINX=1
-    else
-        INSTALL_CERT_NGINX=0
-    fi
+    readOption CERTBOT_NGINX "Do you want to setup SSL using Let's Encrypt / certbot (0 = no, 1 = yes)" 1 INSTALL
 fi
+
+configDefault HOSTNAME "" INSTALL
+configDefault API_HOSTNAME "" INSTALL
+configDefault DATA_HOSTNAME "" INSTALL
 
 configDefault UPDATE_TARGETING 0 ADSERVER
 readOption UPDATE_TARGETING "Do you want to update targeting options (0 = no, 1 = yes)" 1 ADSERVER
