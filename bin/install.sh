@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 export SCRIPT_DIR=$(mktemp --directory)
-export DEBUG_MODE=1
-SKIP_BOOTSTRAP=1
 
 SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
 source ${SRC_DIR}/_functions.sh --root
@@ -89,4 +87,7 @@ then
 fi
 
 rm -rf ${SCRIPT_DIR}
+
+${SCRIPT_DIR}/prepare-directories.sh
+
 echo "DONE"
