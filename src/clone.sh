@@ -19,6 +19,6 @@ git clone --branch ${GIT_BRANCH_NAME} ${GIT_REPO_BASE_URL}/${SERVICE_NAME}.git $
     cd ${VENDOR_DIR}/${SERVICE_NAME} \
     && git reset --hard \
     && git fetch --tags \
-    && git checkout ${GIT_BRANCH_NAME} \
+    && git checkout --track --branch ${GIT_BRANCH_NAME} \
     && git pull \
 )
