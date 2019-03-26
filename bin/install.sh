@@ -40,7 +40,7 @@ then
             ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
         elif [[ "$SERVICE" == "adserver" ]]
         then
-            ${SCRIPT_DIR}/clone.sh ${SERVICE} create-admin-support-passoword-input
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
         elif [[ "$SERVICE" == "adpanel" ]]
         then
             ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
