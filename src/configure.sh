@@ -121,7 +121,7 @@ then
     ADUSER_EXTERNAL_LOCATION="${INSTALL_SCHEME}://$INSTALL_DATA_HOSTNAME"
     ADUSER_INTERNAL_LOCATION="$ADUSER_EXTERNAL_LOCATION"
 
-unset APP_NAME
+    unset APP_NAME
     read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env.dist
 
     APP_VERSION=$(versionFromGit ${VENDOR_DIR}/aduser)
@@ -203,5 +203,12 @@ then
         INSTALL_CERT_NGINX=1
     fi
 fi
+
+configDefault UPDATE_TARGETING 0 ADSERVER
+readOption UPDATE_TARGETING "Do you want to update targeting options (0 = no, 1 = yes)" 1 ADSERVER
+configDefault FILTERING 0 ADSERVER
+readOption UPDATE_FILTERING "Do you want to update filtering options (0 = no, 1 = yes)" 1 ADSERVER
+configDefault CREATE_ADMIN 0 ADSERVER
+readOption CREATE_ADMIN "Do you want to update filtering options (0 = no, 1 = yes)" 1 ADSERVER
 
 configVars | tee ${CONFIG_FILE}

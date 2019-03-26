@@ -47,11 +47,20 @@ function showVars {
     fi
 }
 
-# Usage: readOption <name> [<message> [<max_length>]]
+# Usage: readOption <var_name> [<message> [<max_length> [<namespace]]]
 function readOption {
-    local ORIGINAL=${!1}
     local MESSAGE=${2:-""}
     local MAX_LENGTH=${3:-0}
+
+    local PREFIX=${4:-""}
+    if [[ -z ${PREFIX} ]]
+    then
+        VARNAME="${1}"
+    else
+        VARNAME="${PREFIX}_${1}"
+    fi
+
+    local ORIGINAL=${!VARNAME:-""}
 
     if [[ ${MAX_LENGTH} -eq 1 ]]
     then
@@ -59,14 +68,14 @@ function readOption {
         read -e -p "${MESSAGE} [${ORIGINAL}]: " -n ${MAX_LENGTH} REPLY
         if [[ ! -z $REPLY ]]
         then
-            eval $( echo ${1}=\$REPLY )
+            eval $( echo ${VARNAME}=\$REPLY )
         fi
     else
         read -e -p "${MESSAGE}: " -i "${ORIGINAL}" -n ${MAX_LENGTH} ${1}
     fi
 }
 
-# Usage: configDefault <var_name> [[<default_value>] <namespace>]
+# Usage: configDefault <var_name> [<default_value> [namespace]]
 function configDefault {
     local PREFIX=${3:-""}
     local VARNAME
