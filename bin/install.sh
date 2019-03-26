@@ -2,6 +2,7 @@
 
 export SCRIPT_DIR=$(mktemp --directory)
 export DEBUG_MODE=1
+SKIP_BOOTSTRAP=1
 
 SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
 source ${SRC_DIR}/_functions.sh --root
@@ -68,11 +69,8 @@ then
         export SERVICE_NAME=${SERVICE}
 
         ${SCRIPT_DIR}/run-target.sh stop ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
-
-        sudo -E -i -u ${VENDOR_USER} ${SCRIPT_DIR}/run-target.sh build ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
-
+        ${SCRIPT_DIR}/run-target.sh build ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
         ${SCRIPT_DIR}/run-target.sh start ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
-
         ${SCRIPT_DIR}/configure-daemon.sh nginx ${VENDOR_DIR}/${SERVICE}/deploy
         ${SCRIPT_DIR}/configure-daemon.sh supervisor ${VENDOR_DIR}/${SERVICE}/deploy
     done
@@ -91,3 +89,4 @@ then
 fi
 
 rm -rf ${SCRIPT_DIR}
+echo "DONE"
