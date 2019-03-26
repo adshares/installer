@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export SCRIPT_DIR=$(mktemp --directory)
-DEBUG_MODE=1
+export DEBUG_MODE=1
 SKIP_BOOTSTRAP=1
 
 SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
@@ -67,13 +67,10 @@ then
     for SERVICE in ${SERVICES}
     do
         export SERVICE_NAME=${SERVICE}
-echo "###a $SERVICE_NAME"
+
         ${SCRIPT_DIR}/run-target.sh stop ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
-echo "###b $SERVICE_NAME"
-        sudo -E -i -u ${VENDOR_USER} ${SCRIPT_DIR}/run-target.sh build ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
-echo "###c $SERVICE_NAME"
+        ${SCRIPT_DIR}/run-target.sh build ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
         ${SCRIPT_DIR}/run-target.sh start ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
-echo "###d $SERVICE_NAME"
         ${SCRIPT_DIR}/configure-daemon.sh nginx ${VENDOR_DIR}/${SERVICE}/deploy
         ${SCRIPT_DIR}/configure-daemon.sh supervisor ${VENDOR_DIR}/${SERVICE}/deploy
     done
@@ -92,3 +89,4 @@ then
 fi
 
 rm -rf ${SCRIPT_DIR}
+echo "DONE"

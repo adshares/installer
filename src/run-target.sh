@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-source $(dirname $(readlink -f "$0"))/_functions.sh
 echo "< ${SERVICE_NAME} > $0 $*"
+source $(dirname $(readlink -f "$0"))/_functions.sh
 
 TARGET="$1"
 shift
@@ -22,7 +22,7 @@ then
         then
             ${FILE} $@
         else
-            sudo --preserve-env --login --user=${SUDO_AS} ${FILE} "$@"
+            sudo --preserve-env --set-home --user=${SUDO_AS} ${FILE} "$@"
         fi
     done
 fi
