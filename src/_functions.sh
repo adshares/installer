@@ -165,7 +165,7 @@ SCRIPT_DIR=${SCRIPT_DIR:-"${VENDOR_DIR}/.script"}
 
 CONFIG_DIR=${CONFIG_DIR:-"${ETC_DIR}/conf.d"}
 
-SERVICE_NAME=${SERVICE_NAME:-$(basename $(dirname ${SCRIPT_DIR}))}
+#SERVICE_NAME=${SERVICE_NAME:-$(basename $(dirname ${SCRIPT_DIR}))}
 #if [[ ${PWD} =~ ^${VENDOR_DIR}\/[^/]+ ]]
 #then
 #    SERVICE_NAME=`basename ${SCRIPT_DIR}`
