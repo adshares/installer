@@ -90,4 +90,4 @@ fi
 
 rm -rf ${SCRIPT_DIR}
 
-echo "=== DONE ==="
+echo "=== DONE $0 ==="
