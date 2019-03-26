@@ -206,8 +206,10 @@ fi
 
 configDefault UPDATE_TARGETING 0 ADSERVER
 readOption UPDATE_TARGETING "Do you want to update targeting options (0 = no, 1 = yes)" 1 ADSERVER
-configDefault FILTERING 0 ADSERVER
+
+configDefault UPDATE_FILTERING 0 ADSERVER
 readOption UPDATE_FILTERING "Do you want to update filtering options (0 = no, 1 = yes)" 1 ADSERVER
+
 configDefault CREATE_ADMIN 0 ADSERVER
 readOption CREATE_ADMIN "Do you want to update filtering options (0 = no, 1 = yes)" 1 ADSERVER
 
