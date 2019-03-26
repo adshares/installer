@@ -199,7 +199,7 @@ then
     INSTALL_CERTBOT=N
     read_option INSTALL_CERTBOT "Do you want to setup SSL using Let's Encrypt / certbot" 0 1
     if [[ "${INSTALL_CERTBOT^^}" == "Y" ]]
-    then1
+    then
         INSTALL_CERT_NGINX=1
     fi
 fi
