@@ -29,12 +29,7 @@ then
         [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]]       && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
         [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env.local ]] && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env.local && set +a
 
-        if [[ -z ${APP_HOST:-""} ]]
-        then
-            echo "Skip: ${TARGET_DIR}/${SERVICE_NAME}-$(basename ${FILE})"
-        else
-            envsubst '${APP_PORT},${APP_HOST}' < ${FILE} | tee ${TARGET_DIR}/${SERVICE_NAME}-$(basename ${FILE})
-        fi
+        envsubst '${APP_PORT},${APP_HOST}' < ${FILE} | tee ${TARGET_DIR}/${SERVICE_NAME}-$(basename ${FILE})
     done
 
     echo "Restart ${DAEMON_SERVICE_NAME}"
