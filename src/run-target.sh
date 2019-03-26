@@ -16,6 +16,9 @@ FILE_ITEMS=$(find ${SCRIPT_DIR} -maxdepth 1 -name "${TARGET}*.sh" -type f -print
 
 if [[ ${FILE_COUNT} -gt 0 ]]
 then
+    [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]]       && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
+    [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env.local ]] && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env.local && set +a
+
     for FILE in ${FILE_ITEMS}
     do
         if [[ -z ${SUDO_AS} ]] || [[ `id --user --name` == ${SUDO_AS} ]]

@@ -5,7 +5,6 @@ echo " > $0 $*"
 CONFIG_FILE=${ETC_DIR}/config.env
 if [[ -f ${CONFIG_FILE} ]]
 then
-    cat ${CONFIG_FILE}
     set -a
     source ${CONFIG_FILE}
     set +a
@@ -61,7 +60,7 @@ read_option MAIL_PASSWORD "mail smtp password" 1
 read_option MAIL_FROM_ADDRESS "mail from address" 1
 read_option MAIL_FROM_NAME "mail from name" 1
 
-configDefault INSTALL_ADUSER N
+configDefault ADUSER N INSTALL
 read_option INSTALL_ADUSER "Install local aduser service?" 0 1
 
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]]
@@ -77,7 +76,7 @@ else
     ADUSER_EXTERNAL_LOCATION="$ADUSER_ENDPOINT"
 fi
 
-configDefault INSTALL_ADSELECT Y
+configDefault ADSELECT Y INSTALL
 read_option INSTALL_ADSELECT "Install local adselect service?" 0 1
 
 if [[ "${INSTALL_ADSELECT^^}" != "Y" ]]
@@ -86,7 +85,7 @@ then
     read_option ADSELECT_ENDPOINT "External adselect service endpoint" 1
 fi
 
-configDefault INSTALL_ADPAY Y
+configDefault ADPAY Y INSTALL
 read_option INSTALL_ADPAY "Install local adpay service?" 0 1
 
 if [[ "${INSTALL_ADPAY^^}" != "Y" ]]
@@ -95,7 +94,7 @@ then
     read_option ADPAY_ENDPOINT "External adselect service endpoint" 1
 fi
 
-configDefault INSTALL_ADPANEL Y
+configDefault ADPANEL Y INSTALL
 read_option INSTALL_ADPANEL "Install local adpanel service?" 0 1
 
 if [[ "${INSTALL_ADPANEL^^}" != "Y" ]]
@@ -111,7 +110,7 @@ else
     fi
 fi
 
-configDefault INSTALL_ADSERVER_CRON Y
+configDefault ADSERVER_CRON Y INSTALL
 read_option INSTALL_ADSERVER_CRON "Install adserver cronjob?" 0 1
 
 > ${SCRIPT_DIR}/services.txt
@@ -193,7 +192,7 @@ MAIL_DRIVER=log
 LOG_FILE_PATH=${LOG_DIR}/adserver.log
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env
 
-configDefault INSTALL_CERT_NGINX 0
+configDefault CERT_NGINX 0 INSTALL
 if [[ "${INSTALL_SCHEME^^}" == "HTTPS" ]]
 then
     INSTALL_CERTBOT=N
@@ -201,6 +200,8 @@ then
     if [[ "${INSTALL_CERTBOT^^}" == "Y" ]]
     then
         INSTALL_CERT_NGINX=1
+    else
+        INSTALL_CERT_NGINX=0
     fi
 fi
 
@@ -214,3 +215,9 @@ configDefault CREATE_ADMIN 0 ADSERVER
 readOption CREATE_ADMIN "Do you want to create an admin user for $ADSHARES_OPERATOR_EMAIL (0 = no, 1 = yes)" 1 ADSERVER
 
 configVars | tee ${CONFIG_FILE}
+
+configVars ADSERVER | tee -a ${VENDOR_DIR}/adserver/.env
+configVars ADPANEL  | tee -a ${VENDOR_DIR}/adpanel/.env
+configVars ADSELECT | tee -a ${VENDOR_DIR}/adselect/.env
+configVars ADPAY    | tee -a ${VENDOR_DIR}/adpay/.env
+configVars ADUSER   | tee -a ${VENDOR_DIR}/aduser/.env.local

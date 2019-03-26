@@ -105,11 +105,19 @@ function configDefault {
 }
 
 # Print like `env` would
-# Usage: configVars
+# Usage: configVars [namespace]
 function configVars {
+    local PREFIX=${1:-""}
+
     for VARNAME in ${_CONFIG_VARS[@]}
     do
-        echo "${VARNAME}=${!VARNAME}"
+        if [[ -z ${PREFIX} ]]
+        then
+            echo "${VARNAME}=${!VARNAME}"
+        elif [[ ${VARNAME} == ${PREFIX}_* ]]
+        then
+            echo "${VARNAME:${#PREFIX}}=${!VARNAME}"
+        fi
     done
 }
 
