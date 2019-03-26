@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-echo "< ${SERVICE_NAME} > $0 $*"
 source $(dirname $(readlink -f "$0"))/_functions.sh
+echo "< ${SERVICE_NAME} > $0 $*"
 
 TARGET="$1"
 shift
