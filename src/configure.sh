@@ -211,6 +211,6 @@ configDefault UPDATE_FILTERING 0 ADSERVER
 readOption UPDATE_FILTERING "Do you want to update filtering options (0 = no, 1 = yes)" 1 ADSERVER
 
 configDefault CREATE_ADMIN 0 ADSERVER
-readOption CREATE_ADMIN "Do you want to update filtering options (0 = no, 1 = yes)" 1 ADSERVER
+readOption CREATE_ADMIN "Do you want to create an admin user for $ADSHARES_OPERATOR_EMAIL (0 = no, 1 = yes)" 1 ADSERVER
 
 configVars | tee ${CONFIG_FILE}

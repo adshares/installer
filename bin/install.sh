@@ -88,6 +88,4 @@ fi
 
 rm -rf ${SCRIPT_DIR}
 
-${SCRIPT_DIR}/prepare-directories.sh
-
 echo "DONE"
