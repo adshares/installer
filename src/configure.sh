@@ -65,15 +65,14 @@ read_option INSTALL_ADUSER "Install local aduser service?" 0 1
 
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]]
 then
-    INSTALL_DATA_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADUSER_INTERNAL_LOCATION" host 2>/dev/null`
+    INSTALL_DATA_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADUSER_BASE_URL" host 2>/dev/null`
     INSTALL_DATA_HOSTNAME=${INSTALL_DATA_HOSTNAME:-127.0.0.3}
     read_option INSTALL_DATA_HOSTNAME       "AdUser domain (data API)" 1
 else
     ADUSER_ENDPOINT="https://gitoku.com/"
     read_option ADUSER_ENDPOINT "External aduser service endpoint" 1
 
-    ADUSER_INTERNAL_LOCATION="$ADUSER_ENDPOINT"
-    ADUSER_EXTERNAL_LOCATION="$ADUSER_ENDPOINT"
+    ADUSER_BASE_URL="$ADUSER_ENDPOINT"
     INSTALL_DATA_HOSTNAME=""
 fi
 
@@ -118,8 +117,7 @@ read_option INSTALL_ADSERVER_CRON "Install adserver cronjob?" 0 1
 
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]]
 then
-    ADUSER_EXTERNAL_LOCATION="${INSTALL_SCHEME}://$INSTALL_DATA_HOSTNAME"
-    ADUSER_INTERNAL_LOCATION="$ADUSER_EXTERNAL_LOCATION"
+    ADUSER_BASE_URL="${INSTALL_SCHEME}://$INSTALL_DATA_HOSTNAME"
 
     unset APP_NAME
     read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env.dist
