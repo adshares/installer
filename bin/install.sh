@@ -38,10 +38,10 @@ then
             ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
         elif [[ "$SERVICE" == "adserver" ]]
         then
-            ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} release-v0.4
         elif [[ "$SERVICE" == "adpanel" ]]
         then
-            ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} release-v0.4
         else
             ${SCRIPT_DIR}/clone.sh ${SERVICE} ${BRANCH}
         fi
