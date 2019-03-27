@@ -69,7 +69,7 @@ then
         ${SCRIPT_DIR}/run-target.sh stop ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
         ${SCRIPT_DIR}/run-target.sh build ${VENDOR_DIR}/${SERVICE}/deploy ${VENDOR_USER} ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
         ${SCRIPT_DIR}/run-target.sh start ${VENDOR_DIR}/${SERVICE}/deploy root ${SCRIPT_DIR} ${VENDOR_DIR}/${SERVICE}
-        ${SCRIPT_DIR}/configure-daemon.sh nginx ${VENDOR_DIR}/${SERVICE}/deploy
+
         ${SCRIPT_DIR}/configure-daemon.sh supervisor ${VENDOR_DIR}/${SERVICE}/deploy
     done
 fi
@@ -81,11 +81,21 @@ CONFIG_FILE=${ETC_DIR}/config.env
 
 source ${CONFIG_FILE}
 
-if [[ ${INSTALL_CERTBOT_NGINX:-0} -eq 1 ]]
+if [[ ${SKIP_SERVICES:-0} -ne 1 ]]
 then
-    [[ -z ${INSTALL_HOSTNAME} ]] || certbot --nginx --cert-name ${INSTALL_HOSTNAME} --domains ${INSTALL_HOSTNAME}
-    [[ -z ${INSTALL_API_HOSTNAME} ]] || certbot --nginx --cert-name ${INSTALL_API_HOSTNAME} --domains ${INSTALL_API_HOSTNAME}
-    [[ -z ${INSTALL_DATA_HOSTNAME} ]] || certbot --nginx --cert-name ${INSTALL_DATA_HOSTNAME} --domains ${INSTALL_DATA_HOSTNAME}
+    for SERVICE in ${SERVICES}
+    do
+        export SERVICE_NAME=${SERVICE}
+
+        ${SCRIPT_DIR}/configure-daemon.sh nginx ${VENDOR_DIR}/${SERVICE}/deploy
+
+        if [[ ${INSTALL_CERTBOT_NGINX:-0} -eq 1 ]]
+        then
+            [[ -z ${INSTALL_HOSTNAME} ]] || [[ ${SERVICE_NAME} == "adpanel" ]] && certbot --nginx --cert-name ${INSTALL_HOSTNAME} --domains ${INSTALL_HOSTNAME}
+            [[ -z ${INSTALL_API_HOSTNAME} ]] || [[ ${SERVICE_NAME} == "adserver" ]] && certbot --nginx --cert-name ${INSTALL_API_HOSTNAME} --domains ${INSTALL_API_HOSTNAME}
+            [[ -z ${INSTALL_DATA_HOSTNAME} ]] || [[ ${SERVICE_NAME} == "aduser" ]] && certbot --nginx --cert-name ${INSTALL_DATA_HOSTNAME} --domains ${INSTALL_DATA_HOSTNAME}
+        fi
+    done
 fi
 
 rm -rf ${SCRIPT_DIR}
