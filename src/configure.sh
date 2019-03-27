@@ -65,6 +65,7 @@ read_option INSTALL_ADUSER "Install local aduser service?" 0 1
 
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]]
 then
+    ADUSER_BASE_URL=${ADUSER_BASE_URL:-""}
     INSTALL_DATA_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADUSER_BASE_URL" host 2>/dev/null`
     INSTALL_DATA_HOSTNAME=${INSTALL_DATA_HOSTNAME:-127.0.0.3}
     read_option INSTALL_DATA_HOSTNAME       "AdUser domain (data API)" 1
