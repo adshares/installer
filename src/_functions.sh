@@ -61,6 +61,8 @@ function readOption {
         VARNAME="${PREFIX}_${1}"
     fi
 
+    echo -e "\n"
+
     local ORIGINAL=${!VARNAME:-""}
     if [[ ${MAX_LENGTH} -eq 1 ]]
     then
