@@ -118,7 +118,7 @@ then
     INSTALL_ADSERVER=1
 
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
-    APP_ID=x`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 64`
+    APP_ID=${APP_ID:"x`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
     APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
 
     readOption ADSHARES_ADDRESS "ADS wallet address"
