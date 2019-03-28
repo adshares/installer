@@ -2,6 +2,7 @@
 
 test ${_FUNCTIONS_FILE_WAS_LOADED:-0} -eq 1 && echo "Functions file was already loaded" >&2 && exit 127
 _FUNCTIONS_FILE_WAS_LOADED=1
+_CONFIG_VARS=()
 
 function versionFromGit {
     local _PWD
@@ -61,15 +62,27 @@ function readOption {
     fi
 
     local ORIGINAL=${!VARNAME:-""}
-
     if [[ ${MAX_LENGTH} -eq 1 ]]
     then
-        local REPLY
-        read -e -p "${MESSAGE} [${ORIGINAL}]: " -n ${MAX_LENGTH} REPLY
-        if [[ ! -z $REPLY ]]
+        if [[ "${ORIGINAL}" == "1" ]] || [[ "${ORIGINAL^^}" == "Y" ]]
         then
-            eval $( echo ${VARNAME}=\$REPLY )
+            ORIGINAL=1
+        else
+            ORIGINAL=0
         fi
+
+        local REPLY
+        local _EXPR
+        read -e -p "${MESSAGE} (0 = no, 1 = yes) [${ORIGINAL}]: " -n ${MAX_LENGTH} REPLY
+
+        if [[ -z $REPLY ]]
+        then
+            REPLY=${ORIGINAL}
+        fi
+
+        local _EXPR=`echo "${VARNAME}=\$REPLY"`
+#        echo " ^^^ predefined: $_EXPR"
+        eval `echo "${VARNAME}=\$REPLY"`
     else
         read -e -p "${MESSAGE}: " -i "${ORIGINAL}" -n ${MAX_LENGTH} ${1}
     fi
@@ -98,7 +111,8 @@ function configDefault {
         VALUE="$ORIGINAL"
     fi
 
-    local _EXPR=$( echo ${VARNAME}=\$VALUE )
+    local _EXPR=`echo "${VARNAME}=\$VALUE"`
+#    echo " ^^^ default: $_EXPR"
     eval ${_EXPR}
 
     _CONFIG_VARS+=(${VARNAME})

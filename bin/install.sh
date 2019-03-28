@@ -38,7 +38,7 @@ then
             ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
         elif [[ "$SERVICE" == "adserver" ]]
         then
-            ${SCRIPT_DIR}/clone.sh ${SERVICE} release-v0.4
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} contextual-data
         elif [[ "$SERVICE" == "adpanel" ]]
         then
             ${SCRIPT_DIR}/clone.sh ${SERVICE} release-v0.4
@@ -54,7 +54,8 @@ ${SCRIPT_DIR}/prepare-directories.sh
 
 if [[ ${SKIP_CONFIGURE:-0} -ne 1 ]]
 then
-    ${SCRIPT_DIR}/configure.sh
+    echo " --- Configuring services --- "
+    ${SCRIPT_DIR}/configure.sh && echo " < DONE"
     SERVICES=$(cat ${SCRIPT_DIR}/services.txt)
 fi
 
@@ -74,12 +75,29 @@ then
     done
 fi
 
-export SERVICE_NAME=${VENDOR_NAME}
-${SCRIPT_DIR}/configure-daemon.sh fpm-pool ${SCRIPT_DIR} /etc/php/7.2/fpm/pool.d php7.2-fpm
-
 CONFIG_FILE=${ETC_DIR}/config.env
+echo " ### Configuring: ${CONFIG_FILE} ### "
 
 source ${CONFIG_FILE}
+
+export SERVICE_NAME=${VENDOR_NAME}
+[[ ${INSTALL_FPM_POOL:-0} -eq 1 ]] && ${SCRIPT_DIR}/configure-daemon.sh fpm-pool ${SCRIPT_DIR} /etc/php/7.2/fpm/pool.d php7.2-fpm
+
+if [[ ${SKIP_SERVICES:-0} -ne 1 ]] && [[ ${INSTALL_ADSERVER_CRON:-0} -eq 1 ]]
+then
+    TEMP_CRONTAB_FILE="$(mktemp).txt"
+
+    for SERVICE in ${SERVICES}
+    do
+        export SERVICE_DIR="${VENDOR_DIR}/${SERVICE}"
+
+        [[ -e "${SERVICE_DIR}/deploy/crontablist.sh" ]] && "${SERVICE_DIR}/deploy/crontablist.sh" | tee -a ${TEMP_CRONTAB_FILE}
+    done
+
+    crontab -u ${VENDOR_USER} ${TEMP_CRONTAB_FILE}
+
+    rm ${TEMP_CRONTAB_FILE}
+fi
 
 if [[ ${SKIP_SERVICES:-0} -ne 1 ]]
 then
@@ -91,9 +109,9 @@ then
 
         if [[ ${INSTALL_CERTBOT_NGINX:-0} -eq 1 ]]
         then
-            [[ -z ${INSTALL_HOSTNAME} ]] || [[ ${SERVICE_NAME} == "adpanel" ]] && certbot --nginx --cert-name ${INSTALL_HOSTNAME} --domains ${INSTALL_HOSTNAME}
-            [[ -z ${INSTALL_API_HOSTNAME} ]] || [[ ${SERVICE_NAME} == "adserver" ]] && certbot --nginx --cert-name ${INSTALL_API_HOSTNAME} --domains ${INSTALL_API_HOSTNAME}
-            [[ -z ${INSTALL_DATA_HOSTNAME} ]] || [[ ${SERVICE_NAME} == "aduser" ]] && certbot --nginx --cert-name ${INSTALL_DATA_HOSTNAME} --domains ${INSTALL_DATA_HOSTNAME}
+            ! [[ -z ${INSTALL_HOSTNAME} ]] && [[ ${SERVICE_NAME} == "adpanel" ]] && certbot --nginx --cert-name ${INSTALL_HOSTNAME} --domains ${INSTALL_HOSTNAME}
+            ! [[ -z ${INSTALL_API_HOSTNAME} ]] && [[ ${SERVICE_NAME} == "adserver" ]] && certbot --nginx --cert-name ${INSTALL_API_HOSTNAME} --domains ${INSTALL_API_HOSTNAME}
+            ! [[ -z ${INSTALL_DATA_HOSTNAME} ]] && [[ ${SERVICE_NAME} == "aduser" ]] && certbot --nginx --cert-name ${INSTALL_DATA_HOSTNAME} --domains ${INSTALL_DATA_HOSTNAME}
         fi
     done
 fi
@@ -101,3 +119,5 @@ fi
 rm -rf ${SCRIPT_DIR}
 
 echo "=== DONE $0 ==="
+
+
