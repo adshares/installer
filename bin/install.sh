@@ -55,7 +55,9 @@ ${SCRIPT_DIR}/prepare-directories.sh
 if [[ ${SKIP_CONFIGURE:-0} -ne 1 ]]
 then
     echo " --- Configuring services --- "
-    ${SCRIPT_DIR}/configure.sh && echo " < DONE"
+
+    ${SCRIPT_DIR}/configure.sh
+
     SERVICES=$(cat ${SCRIPT_DIR}/services.txt)
 fi
 
@@ -115,8 +117,8 @@ then
         fi
     done
 fi
-rm -rf ${SCRIPT_DIR}
 
+rm -rf ${SCRIPT_DIR}
 echo "=== DONE $0 ==="
 
 

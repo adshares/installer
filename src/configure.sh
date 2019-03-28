@@ -85,7 +85,6 @@ readOption ADUSER "Install local >AdUser< service?" 1 INSTALL
 
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]] || [[ ${INSTALL_ADUSER:-0} -eq 1 ]]
 then
-
     unset APP_NAME
 
     read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env.local.dist
@@ -121,7 +120,7 @@ then
     INSTALL_ADSERVER=1
 
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
-    APP_ID=${APP_ID:"x`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
+    APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
     APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
 
     readOption ADSHARES_ADDRESS "ADS wallet address"
@@ -218,12 +217,32 @@ configVars | tee ${CONFIG_FILE}
 
 > ${SCRIPT_DIR}/services.txt
 
-[[ ${INSTALL_ADSELECT:-0} -eq 1 ]] && echo "adselect" | tee -a ${SCRIPT_DIR}/services.txt && configVars ADSELECT | tee -a ${VENDOR_DIR}/adselect/.env
+if [[ ${INSTALL_ADSELECT:-0} -eq 1 ]]
+then
+    echo "adselect" | tee -a ${SCRIPT_DIR}/services.txt
+    configVars ADSELECT | tee -a ${VENDOR_DIR}/adselect/.env
+fi
 
-[[ ${INSTALL_ADPAY:-0} -eq 1 ]] && echo "adpay" | tee -a ${SCRIPT_DIR}/services.txt && configVars ADPAY | tee -a ${VENDOR_DIR}/adpay/.env
+if [[ ${INSTALL_ADPAY:-0} -eq 1 ]]
+then
+    echo "adpay" | tee -a ${SCRIPT_DIR}/services.txt
+    configVars ADPAY | tee -a ${VENDOR_DIR}/adpay/.env
+fi
 
-[[ ${INSTALL_ADUSER:-0} -eq 1 ]] && echo "aduser" | tee -a ${SCRIPT_DIR}/services.txt && configVars ADUSER | tee -a ${VENDOR_DIR}/aduser/.env.local
+if [[ ${INSTALL_ADUSER:-0} -eq 1 ]]
+then
+    echo "aduser" | tee -a ${SCRIPT_DIR}/services.txt
+    #configVars ADUSER | tee -a ${VENDOR_DIR}/aduser/.env.local
+fi
 
-[[ ${INSTALL_ADSERVER:-0} -eq 1 ]] && echo "adserver" | tee -a ${SCRIPT_DIR}/services.txt && configVars ADSERVER | tee -a ${VENDOR_DIR}/adserver/.env
+if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
+then
+    echo "adserver" | tee -a ${SCRIPT_DIR}/services.txt
+    configVars ADSERVER | tee -a ${VENDOR_DIR}/adserver/.env
+fi
 
-[[ ${INSTALL_ADPANEL:-0} -eq 1 ]] && echo "adpanel" | tee -a ${SCRIPT_DIR}/services.txt && configVars ADPANEL | tee -a ${VENDOR_DIR}/adpanel/.env
+if [[ ${INSTALL_ADPANEL:-0} -eq 1 ]]
+then
+    echo "adpanel" | tee -a ${SCRIPT_DIR}/services.txt
+    configVars ADPANEL | tee -a ${VENDOR_DIR}/adpanel/.env
+fi
