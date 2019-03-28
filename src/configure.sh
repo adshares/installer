@@ -54,7 +54,7 @@ then
     save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env
 else
     INSTALL_ADSELECT=0
-    ADSELECT_ENDPOINT="https://example.com"
+    ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
     readOption ADSELECT_ENDPOINT "External AdSelect service endpoint"
 fi
 
@@ -74,16 +74,17 @@ then
     save_env ${VENDOR_DIR}/adpay/.env.dist ${VENDOR_DIR}/adpay/.env
 else
     INSTALL_ADPAY=0
-    ADPAY_ENDPOINT="https://example.com"
+    ADPAY_ENDPOINT=${ADPAY_ENDPOINT:-"https://example.com"}
     readOption ADPAY_ENDPOINT "External AdPay service endpoint"
 fi
 
 configDefault ADUSER 1 INSTALL
 readOption ADUSER "Install local >AdUser< service?" 1 INSTALL
 
+#configDefault UPDATE_DATA 0 ADUSER
+
 if [[ "${INSTALL_ADUSER^^}" == "Y" ]] || [[ ${INSTALL_ADUSER:-0} -eq 1 ]]
 then
-    INSTALL_ADUSER=1
 
     unset APP_NAME
 
@@ -102,6 +103,8 @@ then
     save_env ${VENDOR_DIR}/aduser/.env.local.dist ${VENDOR_DIR}/aduser/.env.local
 
     ADUSER_BASE_URL="${INSTALL_SCHEME}://${INSTALL_DATA_HOSTNAME}"
+
+#    readOption UPDATE_DATA "Update context discovery data?" 1 ADUSER
 else
     INSTALL_ADUSER=0
     configDefault ADUSER_ENDPOINT "${INSTALL_SCHEME}://${INSTALL_DATA_HOSTNAME}"
