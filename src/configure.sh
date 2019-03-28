@@ -18,6 +18,10 @@ readOption HOSTNAME "AdPanel domain (UI for advertisers and publishers)" 0 INSTA
 configDefault API_HOSTNAME `php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$APP_URL" host 2>/dev/null` INSTALL
 readOption API_HOSTNAME "AdServer domain (serving banners)" 0 INSTALL
 
+configDefault DATA_HOSTNAME `php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADUSER_BASE_URL" host 2>/dev/null` INSTALL
+readOption DATA_HOSTNAME "AdUser domain (data API)" 0 INSTALL
+echo ">$INSTALL_DATA_HOSTNAME<"
+
 configDefault HTTPS 1 INSTALL
 readOption HTTPS "Configure for HTTPS?" 1 INSTALL
 
@@ -81,24 +85,23 @@ if [[ "${INSTALL_ADUSER^^}" == "Y" ]] || [[ ${INSTALL_ADUSER:-0} -eq 1 ]]
 then
     INSTALL_ADUSER=1
 
-    ADUSER_BASE_URL=${ADUSER_BASE_URL:-""}
-    INSTALL_DATA_HOSTNAME=${INSTALL_DATA_HOSTNAME:-127.0.0.3}
-    readOption DATA_HOSTNAME "AdUser domain (data API)" 0 INSTALL
-
-    ADUSER_BASE_URL="${INSTALL_SCHEME}://${INSTALL_DATA_HOSTNAME}"
-
     unset APP_NAME
+
     read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env.local.dist
-    TRACKING_SECRET=${TRACKING_SECRET:-${ADUSER_TRACKING_SECRET}}
+
+    APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
     APP_VERSION=$(versionFromGit ${VENDOR_DIR}/aduser)
     APP_HOST=${INSTALL_DATA_HOSTNAME}
-
-    readOption NAME "AdUser Service Name" 0 APP
+    readOption APP_NAME "AdUser Service Name"
 
     readOption RECAPTCHA_SITE_KEY "Google reCAPTCHA v3 site key"
     readOption RECAPTCHA_SECRET_KEY "Google reCAPTCHA v3 secret key"
 
+    TRACKING_SECRET=${TRACKING_SECRET:-${ADUSER_TRACKING_SECRET:-"`date | sha256sum | head -c 64`"}}
+
     save_env ${VENDOR_DIR}/aduser/.env.local.dist ${VENDOR_DIR}/aduser/.env.local
+
+    ADUSER_BASE_URL="${INSTALL_SCHEME}://${INSTALL_DATA_HOSTNAME}"
 else
     INSTALL_ADUSER=0
     configDefault ADUSER_ENDPOINT "${INSTALL_SCHEME}://${INSTALL_DATA_HOSTNAME}"
@@ -106,7 +109,6 @@ else
 
     ADUSER_BASE_URL="$ADUSER_ENDPOINT"
 fi
-INSTALL_DATA_HOSTNAME=`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADUSER_BASE_URL" host 2>/dev/null`
 
 configDefault ADSERVER 1 INSTALL
 readOption ADUSER "Install local >AdServer< service?" 1 INSTALL
@@ -116,7 +118,8 @@ then
     INSTALL_ADSERVER=1
 
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
-    APP_ID=x`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`
+    APP_ID=x`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 64`
+    APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
 
     readOption ADSHARES_ADDRESS "ADS wallet address"
     readOption ADSHARES_SECRET "ADS wallet secret"
@@ -195,10 +198,6 @@ if [[ "${INSTALL_SCHEME^^}" == "HTTPS" ]]
 then
     readOption CERTBOT_NGINX "Do you want to setup SSL using Let's Encrypt / certbot" 1 INSTALL
 fi
-
-configDefault HOSTNAME "" INSTALL
-configDefault API_HOSTNAME "" INSTALL
-configDefault DATA_HOSTNAME "" INSTALL
 
 configDefault UPDATE_TARGETING 0 ADSERVER
 readOption UPDATE_TARGETING "Do you want to update targeting options" 1 ADSERVER

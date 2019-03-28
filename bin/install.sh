@@ -115,7 +115,6 @@ then
         fi
     done
 fi
-
 rm -rf ${SCRIPT_DIR}
 
 echo "=== DONE $0 ==="
