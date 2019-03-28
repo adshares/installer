@@ -38,7 +38,7 @@ then
             ${SCRIPT_DIR}/clone.sh ${SERVICE} develop
         elif [[ "$SERVICE" == "adserver" ]]
         then
-            ${SCRIPT_DIR}/clone.sh ${SERVICE} contextual-data
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} release-v0.4
         elif [[ "$SERVICE" == "adpanel" ]]
         then
             ${SCRIPT_DIR}/clone.sh ${SERVICE} release-v0.4
