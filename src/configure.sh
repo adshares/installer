@@ -143,7 +143,7 @@ readOption ADSERVER_CRON "Install AdServer cron jobs?" 1 INSTALL
 configDefault ADPANEL 1 INSTALL
 readOption ADPANEL "Install local >AdPanel< service?" 1 INSTALL
 
-[[ ${INSTALL_ADPANEL:-0} -eq 1 ]]
+if [[ ${INSTALL_ADPANEL:-0} -eq 1 ]]
 then
     INSTALL_ADPANEL=1
     ADSERVER_URL="$APP_URL"
