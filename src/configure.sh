@@ -24,14 +24,12 @@ readOption DATA_HOSTNAME "AdUser domain (data API)" 0 INSTALL
 configDefault HTTPS 1 INSTALL
 readOption HTTPS "Configure for HTTPS?" 1 INSTALL
 
-if [[ "${INSTALL_HTTPS^^}" == "Y" ]] || [[ ${INSTALL_HTTPS:-0} -eq 1 ]] || [[ "${INSTALL_USE_HTTPS^^}" == "Y" ]] || [[ ${INSTALL_USE_HTTPS} -eq 1 ]]
+if [[ ${INSTALL_HTTPS:-0} -eq 1 ]]
 then
-    INSTALL_HTTPS=1
     INSTALL_SCHEME=https
     BANNER_FORCE_HTTPS=true
     APP_PORT=443
 else
-    INSTALL_HTTPS=0
     INSTALL_SCHEME=http
     BANNER_FORCE_HTTPS=false
     APP_PORT=80
@@ -40,7 +38,7 @@ fi
 configDefault ADSELECT 1 INSTALL
 readOption ADSELECT "Install local >AdSelect< service?" 1 INSTALL
 
-if [[ "${INSTALL_ADSELECT^^}" == "Y" ]] || [[ ${INSTALL_ADSELECT:-0} -eq 1 ]]
+if [[ ${INSTALL_ADSELECT:-0} -eq 1 ]]
 then
     INSTALL_ADSELECT=1
     ADSELECT_ENDPOINT=http://localhost:8011
@@ -60,7 +58,7 @@ fi
 configDefault ADPAY 1 INSTALL
 readOption ADPAY "Install local >AdPay< service?" 1 INSTALL
 
-if [[ "${INSTALL_ADPAY^^}" == "Y" ]] || [[ ${INSTALL_ADPAY:-0} -eq 1 ]]
+if [[ ${INSTALL_ADPAY:-0} -eq 1 ]]
 then
     INSTALL_ADPAY=1
     ADPAY_ENDPOINT=http://localhost:8012
@@ -82,7 +80,7 @@ readOption ADUSER "Install local >AdUser< service?" 1 INSTALL
 
 #configDefault UPDATE_DATA 0 ADUSER
 
-if [[ "${INSTALL_ADUSER^^}" == "Y" ]] || [[ ${INSTALL_ADUSER:-0} -eq 1 ]]
+if [[ ${INSTALL_ADUSER:-0} -eq 1 ]]
 then
     unset APP_NAME
 
@@ -115,7 +113,7 @@ fi
 configDefault ADSERVER 1 INSTALL
 readOption ADSERVER "Install local >AdServer< service?" 1 INSTALL
 
-if [[ "${INSTALL_ADSERVER^^}" == "Y" ]] || [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
+if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
     APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
