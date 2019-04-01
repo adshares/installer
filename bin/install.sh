@@ -52,6 +52,8 @@ fi
 
 ${SCRIPT_DIR}/prepare-directories.sh
 
+rm -f ${VENDOR_DIR}/.tmp.env
+
 if [[ ${SKIP_CONFIGURE:-0} -ne 1 ]]
 then
     echo " --- Configuring services --- "

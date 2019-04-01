@@ -196,6 +196,13 @@ readOption UPDATE_FILTERING "Do you want to update filtering options" 1 ADSERVER
 configDefault CREATE_ADMIN 0 ADSERVER
 readOption CREATE_ADMIN "Do you want to create an admin user for $ADSHARES_OPERATOR_EMAIL" 1 ADSERVER
 
+if [[ ${ADSERVER_CREATE_ADMIN:-0} -eq 1 ]]
+then
+    TMP_ADMIN_PASSWORD=""
+    readOption TMP_ADMIN_PASSWORD "Please provide an initial admin password"
+    echo "TMP_ADMIN_PASSWORD=\"$TMP_ADMIN_PASSWORD\"" >> ${VENDOR_DIR}/.tmp.env
+fi
+
 configDefault FPM_POOL 0 INSTALL
 readOption FPM_POOL "Do you want to setup php-fpm pool" 1 INSTALL
 
