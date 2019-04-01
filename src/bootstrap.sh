@@ -100,7 +100,7 @@ rm -rf ${TEMP_DIR}
 DB_USERNAME=${VENDOR_NAME}
 DB_PASSWORD=${VENDOR_NAME}
 
-DB_DATABASES=(adserver aduser)
+DB_DATABASES=("${VENDOR_NAME}_adserver" "${VENDOR_NAME}_aduser")
 
 for DB_DATABASE in ${DB_DATABASES[@]}
 do
