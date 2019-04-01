@@ -107,6 +107,11 @@ then
     TRACKING_SECRET=${TRACKING_SECRET:-${ADUSER_TRACKING_SECRET:-"`date | sha256sum | head -c 64`"}}
     DATABASE_URL=mysql://adshares:adshares@127.0.0.1:3306/aduser
 
+    if [[ ${DATABASE_URL} == "mysql://adshares:adshares@127.0.0.1:3306/aduser" ]]
+    then
+        DATABASE_URL="${VENDOR_NAME}_aduser"
+    fi
+
     save_env ${VENDOR_DIR}/aduser/.env.local.dist ${VENDOR_DIR}/aduser/.env.local
 
     ADUSER_BASE_URL="${INSTALL_SCHEME}://${INSTALL_DATA_HOSTNAME}"
@@ -136,6 +141,7 @@ then
     readOption ADSHARES_OPERATOR_EMAIL "ADS wallet owner email (for balance alerts)"
     ADSHARES_COMMAND=`which ads`
     ADSHARES_WORKINGDIR="${VENDOR_DIR}/adserver/storage/wallet"
+mkdir -pm 777 ${ADSHARES_WORKINGDIR}
 
     readOption MAIL_HOST "mail smtp host"
     readOption MAIL_PORT "mail smtp port"
@@ -189,6 +195,11 @@ readOption ADSHARES_LICENSE_KEY "Adshares Network LICENSE Key" 0
 LOG_FILE_PATH=${LOG_DIR}/adserver.log
 LOG_LEVEL=debug
 LOG_CHANNEL=single
+if [[ ${DB_DATABASE} == "adserver" ]]
+then
+    DB_DATABASE="${VENDOR_NAME}_adserver"
+fi
+
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env
 
 configDefault CERTBOT_NGINX 0 INSTALL
