@@ -49,6 +49,11 @@ then
     ADSELECT_SERVER_INTERFACE=127.0.0.1
 
     save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env
+
+    {
+        echo "APP_PORT=\"${ADSELECT_SERVER_PORT}\""
+        echo "APP_HOST=\"${ADSELECT_SERVER_INTERFACE}\""
+    } | tee ${VENDOR_DIR}/adselect/.env.local
 else
     INSTALL_ADSELECT=0
     ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
@@ -69,6 +74,11 @@ then
     ADPAY_SERVER_INTERFACE=127.0.0.1
 
     save_env ${VENDOR_DIR}/adpay/.env.dist ${VENDOR_DIR}/adpay/.env
+
+    {
+        echo "APP_PORT=\"${ADPAY_SERVER_PORT}\""
+        echo "APP_HOST=\"${ADPAY_SERVER_INTERFACE}\""
+    } | tee ${VENDOR_DIR}/adpay/.env.local
 else
     INSTALL_ADPAY=0
     ADPAY_ENDPOINT=${ADPAY_ENDPOINT:-"https://example.com"}
