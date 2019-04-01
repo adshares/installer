@@ -141,7 +141,7 @@ then
     readOption ADSHARES_OPERATOR_EMAIL "ADS wallet owner email (for balance alerts)"
     ADSHARES_COMMAND=`which ads`
     ADSHARES_WORKINGDIR="${VENDOR_DIR}/adserver/storage/wallet"
-mkdir -pm 777 ${ADSHARES_WORKINGDIR}
+    mkdir -pm 777 ${ADSHARES_WORKINGDIR}
 
     readOption MAIL_HOST "mail smtp host"
     readOption MAIL_PORT "mail smtp port"
@@ -195,10 +195,9 @@ readOption ADSHARES_LICENSE_KEY "Adshares Network LICENSE Key" 0
 LOG_FILE_PATH=${LOG_DIR}/adserver.log
 LOG_LEVEL=debug
 LOG_CHANNEL=single
-if [[ ${DB_DATABASE} == "adserver" ]]
-then
-    DB_DATABASE="${VENDOR_NAME}_adserver"
-fi
+DB_DATABASE="${VENDOR_NAME}_adserver"
+DB_USERNAME="${VENDOR_NAME}"
+DB_PASSWORD="${VENDOR_NAME}"
 
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env
 
