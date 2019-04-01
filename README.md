@@ -15,7 +15,7 @@
 
 ```bash
 git clone https://github.com/adshares/installer.git
-sudo installer/bin/install.sh
+sudo -H installer/bin/install.sh
 ```
 > The script above creates a separate `adshares` user (without sudo privileges) to be the owner of all the installed services.
 
