@@ -5,6 +5,10 @@ export SCRIPT_DIR=$(mktemp --directory)
 SRC_DIR=$(dirname $(dirname $(readlink -f "$0")))/src
 source ${SRC_DIR}/_functions.sh --root
 
+export VENDOR_NAME
+export VENDOR_DIR
+export VENDOR_USER
+
 cp -r ${SRC_DIR}/* ${SCRIPT_DIR}
 chmod +x ${SCRIPT_DIR}/*.sh
 
