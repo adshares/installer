@@ -141,7 +141,6 @@ then
     readOption ADSHARES_OPERATOR_EMAIL "ADS wallet owner email (for balance alerts)"
     ADSHARES_COMMAND=`which ads`
     ADSHARES_WORKINGDIR="${VENDOR_DIR}/adserver/storage/wallet"
-    mkdir -pm 777 ${ADSHARES_WORKINGDIR}
 
     readOption MAIL_HOST "mail smtp host"
     readOption MAIL_PORT "mail smtp port"
@@ -149,6 +148,7 @@ then
     readOption MAIL_PASSWORD "mail smtp password"
     readOption MAIL_FROM_ADDRESS "mail from address"
     readOption MAIL_FROM_NAME "mail from name"
+    MAIL_ENCRYPTION="tls"
 fi
 
 ADPANEL_URL="${INSTALL_SCHEME}://$INSTALL_HOSTNAME"
@@ -165,10 +165,12 @@ then
     ADSERVER_URL="$APP_URL"
 
     unset APP_ENV
-
+    unset APP_NAME
     APP_HOST=${INSTALL_HOSTNAME}
 
     read_env ${VENDOR_DIR}/adpanel/.env || read_env ${VENDOR_DIR}/adpanel/.env.dist
+
+    readOption APP_NAME "AdPanel Service Name"
 
     BRAND_ASSETS_DIR=${ADPANEL_BRAND_ASSETS_DIR:-""}
 
