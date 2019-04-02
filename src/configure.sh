@@ -47,6 +47,7 @@ then
 
     ADSELECT_SERVER_PORT=8011
     ADSELECT_SERVER_INTERFACE=127.0.0.1
+    ADSELECT_MONGO_DB_NAME=${ADSELECT_MONGO_DB_NAME:-"${VENDOR_NAME}_adselect"}
 
     save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env
 
@@ -72,6 +73,7 @@ then
 
     ADPAY_SERVER_PORT=8012
     ADPAY_SERVER_INTERFACE=127.0.0.1
+    ADPAY_MONGO_DB_NAME=${ADPAY_MONGO_DB_NAME:-"${VENDOR_NAME}_adpay"}
 
     save_env ${VENDOR_DIR}/adpay/.env.dist ${VENDOR_DIR}/adpay/.env
 
@@ -105,11 +107,11 @@ then
     readOption RECAPTCHA_SECRET_KEY "Google reCAPTCHA v3 secret key"
 
     TRACKING_SECRET=${TRACKING_SECRET:-${ADUSER_TRACKING_SECRET:-"`date | sha256sum | head -c 64`"}}
-    DATABASE_URL=mysql://adshares:adshares@127.0.0.1:3306/aduser
+    DATABASE_URL=${DATABASE_URL:-"mysql://${VENDOR_NAME}:${VENDOR_NAME}@127.0.0.1:3306/${VENDOR_NAME}_aduser"}
 
     if [[ ${DATABASE_URL} == "mysql://adshares:adshares@127.0.0.1:3306/aduser" ]]
     then
-        DATABASE_URL="${VENDOR_NAME}_aduser"
+        DATABASE_URL="mysql://${VENDOR_NAME}:${VENDOR_NAME}@127.0.0.1:3306/${VENDOR_NAME}_aduser"
     fi
 
     save_env ${VENDOR_DIR}/aduser/.env.local.dist ${VENDOR_DIR}/aduser/.env.local
