@@ -185,7 +185,8 @@ fi
 APP_HOST=${INSTALL_API_HOSTNAME}
 
 configDefault LICENSE_KEY "SRV-000000" ADSHARES
-configDefault LICENSE_SERVER_URL "https://account.e11.click" ADSHARES
+configDefault LICENSE_SERVER_URL "https://account.adshares.pl" ADSHARES
+LICENSE_SERVER_URL="https://account.adshares.pl"
 
 readOption ADSHARES_LICENSE_KEY "Adshares Network LICENSE Key" 0
 
