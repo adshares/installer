@@ -47,14 +47,9 @@ then
 
     ADSELECT_SERVER_PORT=8011
     ADSELECT_SERVER_INTERFACE=127.0.0.1
-    ADSELECT_MONGO_DB_NAME=${ADSELECT_MONGO_DB_NAME:-"${VENDOR_NAME}_adselect"}
+    ADSELECT_MONGO_DB_NAME="${VENDOR_NAME}_adselect"}
 
     save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env
-
-    {
-        echo "APP_PORT=\"${ADSELECT_SERVER_PORT}\""
-        echo "APP_HOST=\"${ADSELECT_SERVER_INTERFACE}\""
-    } | tee ${VENDOR_DIR}/adselect/.env.local
 else
     INSTALL_ADSELECT=0
     ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
@@ -73,14 +68,9 @@ then
 
     ADPAY_SERVER_PORT=8012
     ADPAY_SERVER_INTERFACE=127.0.0.1
-    ADPAY_MONGO_DB_NAME=${ADPAY_MONGO_DB_NAME:-"${VENDOR_NAME}_adpay"}
+    ADPAY_MONGO_DB_NAME="${VENDOR_NAME}_adpay"
 
     save_env ${VENDOR_DIR}/adpay/.env.dist ${VENDOR_DIR}/adpay/.env
-
-    {
-        echo "APP_PORT=\"${ADPAY_SERVER_PORT}\""
-        echo "APP_HOST=\"${ADPAY_SERVER_INTERFACE}\""
-    } | tee ${VENDOR_DIR}/adpay/.env.local
 else
     INSTALL_ADPAY=0
     ADPAY_ENDPOINT=${ADPAY_ENDPOINT:-"https://example.com"}
@@ -132,9 +122,13 @@ readOption ADSERVER "Install local >AdServer< service?" 1 INSTALL
 
 if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
+    read_env ${VENDOR_DIR}/adserver/.env || read_env ${VENDOR_DIR}/adserver/.env.dist
+
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
     APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
     APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
+
+echo -e "\n---\n$APP_URL\n$APP_ID\n$APP_KEY\n$APP_NAME\n---\n"
 
     readOption ADSHARES_ADDRESS "ADS wallet address"
     readOption ADSHARES_SECRET "ADS wallet secret"
