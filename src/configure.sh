@@ -120,6 +120,7 @@ readOption ADSERVER "Install local >AdServer< service?" 1 INSTALL
 
 if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
+    unset APP_NAME
     read_env ${VENDOR_DIR}/adserver/.env || read_env ${VENDOR_DIR}/adserver/.env.dist
 
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
