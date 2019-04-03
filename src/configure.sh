@@ -28,11 +28,9 @@ if [[ ${INSTALL_HTTPS:-0} -eq 1 ]]
 then
     INSTALL_SCHEME=https
     BANNER_FORCE_HTTPS=true
-    APP_PORT=443
 else
     INSTALL_SCHEME=http
     BANNER_FORCE_HTTPS=false
-    APP_PORT=80
 fi
 
 configDefault ADSELECT 1 INSTALL
