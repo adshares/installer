@@ -37,7 +37,12 @@ if [[ ${SKIP_CLONE:-0} -ne 1 ]]
 then
     for SERVICE in ${SERVICES}
     do
-        ${SCRIPT_DIR}/clone.sh ${SERVICE} ${BRANCH}
+        if [[ ${SERVICE} == 'adpanel' ]] || [[ ${SERVICE} == 'adserver' ]]
+        then
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} release-v0.5
+        else
+            ${SCRIPT_DIR}/clone.sh ${SERVICE} ${BRANCH}
+        fi
 
         [[ -e ${CONFIG_DIR}/${SERVICE}.env ]] && cp -n ${CONFIG_DIR}/${SERVICE}.env ${VENDOR_DIR}/${SERVICE}/.env
     done
