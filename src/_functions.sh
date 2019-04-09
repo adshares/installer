@@ -82,12 +82,10 @@ function readOption {
             REPLY=${ORIGINAL}
         fi
 
-        local _EXPR=`echo "${VARNAME}=\$REPLY"`
-#        echo " ^^^ predefined: $_EXPR"
-        eval `echo "${VARNAME}=\$REPLY"`
+        local _EXPR=`echo "${VARNAME}=\"\$REPLY\""`
+        eval "${_EXPR}"
     else
         read -e -p "${MESSAGE}: " -i "${ORIGINAL}" -n ${MAX_LENGTH} ${VARNAME}
-#        echo ">>${!VARNAME}<<"
     fi
 
 }
@@ -116,8 +114,7 @@ function configDefault {
     fi
 
     local _EXPR=`echo "${VARNAME}=\$VALUE"`
-#    echo " ^^^ default: $_EXPR"
-    eval ${_EXPR}
+    eval "${_EXPR}"
 
     _CONFIG_VARS+=(${VARNAME})
 }
