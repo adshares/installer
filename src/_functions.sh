@@ -113,7 +113,7 @@ function configDefault {
         VALUE="$ORIGINAL"
     fi
 
-    local _EXPR=`echo "${VARNAME}=\$VALUE"`
+    local _EXPR=`echo "${VARNAME}=\"\$VALUE\""`
     eval "${_EXPR}"
 
     _CONFIG_VARS+=(${VARNAME})
@@ -124,14 +124,14 @@ function configDefault {
 function configVars {
     local PREFIX=${1:-""}
 
-    for VARNAME in ${_CONFIG_VARS[@]}
+    for VARNAME in "${_CONFIG_VARS[@]}"
     do
         if [[ -z ${PREFIX} ]]
         then
-            echo "${VARNAME}=${!VARNAME}"
+            echo "${VARNAME}=\"${!VARNAME}\""
         elif [[ ${VARNAME} == ${PREFIX}_* ]]
         then
-            echo "${VARNAME:${#PREFIX}}=${!VARNAME}"
+            echo "${VARNAME:${#PREFIX}}=\"${!VARNAME}\""
         fi
     done
 }
