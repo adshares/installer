@@ -12,25 +12,101 @@ fi
 
 read_env ${VENDOR_DIR}/adserver/.env || read_env ${VENDOR_DIR}/adserver/.env.dist
 
-configDefault HOSTNAME `php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADPANEL_URL" host 2>/dev/null` INSTALL
-readOption HOSTNAME "AdPanel domain (UI for advertisers and publishers)" 0 INSTALL
+configDefault HOSTNAME "`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADPANEL_URL" host 2>/dev/null`" INSTALL
 
-configDefault API_HOSTNAME `php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$APP_URL" host 2>/dev/null` INSTALL
-readOption API_HOSTNAME "AdServer domain (serving banners)" 0 INSTALL
+configDefault API_HOSTNAME "`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$APP_URL" host 2>/dev/null`" INSTALL
 
-configDefault DATA_HOSTNAME `php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADUSER_BASE_URL" host 2>/dev/null` INSTALL
-readOption DATA_HOSTNAME "AdUser domain (data API)" 0 INSTALL
+configDefault DATA_HOSTNAME "`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADUSER_BASE_URL" host 2>/dev/null`" INSTALL
 
-configDefault HTTPS 1 INSTALL
-readOption HTTPS "Configure for HTTPS?" 1 INSTALL
 
-if [[ ${INSTALL_HTTPS:-0} -eq 1 ]]
+configDefault ADSERVER 1 INSTALL
+readOption ADSERVER "Install local >AdServer< service?" 1 INSTALL
+
+configDefault ADPANEL 1 INSTALL
+readOption ADPANEL "Install local >AdPanel< service?" 1 INSTALL
+
+if [[ ${INSTALL_ADPANEL:-0} -eq 1 || ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
-    INSTALL_SCHEME=https
-    BANNER_FORCE_HTTPS=true
+    unset APP_NAME
+    configDefault APP_NAME "Best Adshares Adserver"
+    readOption APP_NAME "Adserver name"
+
+    configDefault HTTPS 1 INSTALL
+    readOption HTTPS "Configure for HTTPS (strongly recommended)?" 1 INSTALL
+    if [[ ${INSTALL_HTTPS:-0} -eq 1 ]]
+    then
+        INSTALL_SCHEME=https
+        BANNER_FORCE_HTTPS=true
+    else
+        INSTALL_SCHEME=http
+        BANNER_FORCE_HTTPS=false
+    fi
+fi
+
+if [[ ${INSTALL_ADPANEL:-0} -eq 1 ]]
+then
+    readOption HOSTNAME "AdPanel domain (UI for advertisers and publishers)" 0 INSTALL
+fi
+if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
+then
+    readOption API_HOSTNAME "AdServer domain (for serving banners, might get adblocked)" 0 INSTALL
+fi
+
+if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
+then
+    read_env ${VENDOR_DIR}/adserver/.env || read_env ${VENDOR_DIR}/adserver/.env.dist
+
+    APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
+    APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
+    APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
+
+echo -e "\n---\n$APP_URL\n$APP_ID\n$APP_KEY\n$APP_NAME\n---\n"
+
+    readOption ADSHARES_ADDRESS "ADS wallet address"
+    readOption ADSHARES_SECRET "ADS wallet secret"
+    readOption ADSHARES_NODE_HOST "ADS node hostname"
+    readOption ADSHARES_NODE_PORT "ADS node port"
+    readOption ADSHARES_OPERATOR_EMAIL "ADS wallet owner email (for balance alerts)"
+    ADSHARES_COMMAND=`which ads`
+    ADSHARES_WORKINGDIR="${VENDOR_DIR}/adserver/storage/wallet"
+
+    readOption MAIL_HOST "mail smtp host"
+    readOption MAIL_PORT "mail smtp port"
+    readOption MAIL_USERNAME "mail smtp username"
+    readOption MAIL_PASSWORD "mail smtp password"
+    readOption MAIL_FROM_ADDRESS "mail from address"
+    readOption MAIL_FROM_NAME "mail from name"
+    MAIL_ENCRYPTION="tls"
+
+    configDefault ADSERVER_CRON 1 INSTALL
+    readOption ADSERVER_CRON "Install AdServer cron jobs?" 1 INSTALL
+fi
+
+if [[ ${INSTALL_ADPANEL:-0} -eq 1 ]]
+then
+    INSTALL_ADPANEL=1
+    ADSERVER_URL="$APP_URL"
+
+    unset APP_ENV
+    APP_HOST=${INSTALL_HOSTNAME}
+
+    read_env ${VENDOR_DIR}/adpanel/.env || read_env ${VENDOR_DIR}/adpanel/.env.dist
+
+    ADPANEL_URL="${INSTALL_SCHEME}://$INSTALL_HOSTNAME"
+
+    BRAND_ASSETS_DIR=${ADPANEL_BRAND_ASSETS_DIR:-""}
+
+    save_env ${VENDOR_DIR}/adpanel/.env.dist ${VENDOR_DIR}/adpanel/.env
+
+    ADPANEL_BRAND_ASSETS_DIR=${ADPANEL_BRAND_ASSETS_DIR:-""}
+    readOption ADPANEL_BRAND_ASSETS_DIR "Directory where custom brand assets are stored. If dir does not exist, standard assets will be used" 0
+    if [[ ! -d "${ADPANEL_BRAND_ASSETS_DIR}" ]]
+    then
+        echo "Directory ${ADPANEL_BRAND_ASSETS_DIR} doesn't exist."
+    fi
 else
-    INSTALL_SCHEME=http
-    BANNER_FORCE_HTTPS=false
+    configDefault ADPANEL_ENDPOINT "${INSTALL_SCHEME}://example.com"
+    readOption ADPANEL_ENDPOINT "External AdPanel service endpoint"
 fi
 
 configDefault ADSELECT 1 INSTALL
@@ -75,13 +151,14 @@ else
     readOption ADPAY_ENDPOINT "External AdPay service endpoint"
 fi
 
-configDefault ADUSER 1 INSTALL
+configDefault ADUSER 0 INSTALL
 readOption ADUSER "Install local >AdUser< service?" 1 INSTALL
 
 #configDefault UPDATE_DATA 0 ADUSER
 
 if [[ ${INSTALL_ADUSER:-0} -eq 1 ]]
 then
+    readOption DATA_HOSTNAME "AdUser domain (data API)" 0 INSTALL
     unset APP_NAME
 
     read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env.local.dist
@@ -109,86 +186,25 @@ then
 #    readOption UPDATE_DATA "Update context discovery data?" 1 ADUSER
 else
     INSTALL_ADUSER=0
-    configDefault ADUSER_ENDPOINT "${INSTALL_SCHEME}://${INSTALL_DATA_HOSTNAME}"
+    configDefault ADUSER_ENDPOINT "https://gitoku.com"
     readOption ADUSER_ENDPOINT "External AdUser service endpoint"
 
     ADUSER_BASE_URL="$ADUSER_ENDPOINT"
 fi
 
-configDefault ADSERVER 1 INSTALL
-readOption ADSERVER "Install local >AdServer< service?" 1 INSTALL
-
-if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
-then
-    unset APP_NAME
-    read_env ${VENDOR_DIR}/adserver/.env || read_env ${VENDOR_DIR}/adserver/.env.dist
-
-    APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
-    APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
-    APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
-
-echo -e "\n---\n$APP_URL\n$APP_ID\n$APP_KEY\n$APP_NAME\n---\n"
-
-    readOption ADSHARES_ADDRESS "ADS wallet address"
-    readOption ADSHARES_SECRET "ADS wallet secret"
-    readOption ADSHARES_NODE_HOST "ADS node hostname"
-    readOption ADSHARES_NODE_PORT "ADS node port"
-    readOption ADSHARES_OPERATOR_EMAIL "ADS wallet owner email (for balance alerts)"
-    ADSHARES_COMMAND=`which ads`
-    ADSHARES_WORKINGDIR="${VENDOR_DIR}/adserver/storage/wallet"
-
-    readOption MAIL_HOST "mail smtp host"
-    readOption MAIL_PORT "mail smtp port"
-    readOption MAIL_USERNAME "mail smtp username"
-    readOption MAIL_PASSWORD "mail smtp password"
-    readOption MAIL_FROM_ADDRESS "mail from address"
-    readOption MAIL_FROM_NAME "mail from name"
-    MAIL_ENCRYPTION="tls"
-fi
-
-ADPANEL_URL="${INSTALL_SCHEME}://$INSTALL_HOSTNAME"
-
-configDefault ADSERVER_CRON 1 INSTALL
-readOption ADSERVER_CRON "Install AdServer cron jobs?" 1 INSTALL
-
-configDefault ADPANEL 1 INSTALL
-readOption ADPANEL "Install local >AdPanel< service?" 1 INSTALL
-
-if [[ ${INSTALL_ADPANEL:-0} -eq 1 ]]
-then
-    INSTALL_ADPANEL=1
-    ADSERVER_URL="$APP_URL"
-
-    unset APP_ENV
-    unset APP_NAME
-    APP_HOST=${INSTALL_HOSTNAME}
-
-    read_env ${VENDOR_DIR}/adpanel/.env || read_env ${VENDOR_DIR}/adpanel/.env.dist
-
-    readOption APP_NAME "AdPanel Service Name"
-
-    BRAND_ASSETS_DIR=${ADPANEL_BRAND_ASSETS_DIR:-""}
-
-    save_env ${VENDOR_DIR}/adpanel/.env.dist ${VENDOR_DIR}/adpanel/.env
-
-    ADPANEL_BRAND_ASSETS_DIR=${ADPANEL_BRAND_ASSETS_DIR:-""}
-    readOption ADPANEL_BRAND_ASSETS_DIR "Directory where custom brand assets are stored. If dir does not exist, standard assets will be used" 0
-    if [[ ! -d "${ADPANEL_BRAND_ASSETS_DIR}" ]]
-    then
-        echo "Directory ${ADPANEL_BRAND_ASSETS_DIR} doesn't exist."
-    fi
-else
-    configDefault ADPANEL_ENDPOINT "${INSTALL_SCHEME}://${INSTALL_HOSTNAME}"
-    readOption ADPANEL_ENDPOINT "External AdPanel service endpoint"
-fi
-
 APP_HOST=${INSTALL_API_HOSTNAME}
 
-configDefault LICENSE_KEY "SRV-000000" ADSHARES
 configDefault LICENSE_SERVER_URL "https://account.adshares.pl" ADSHARES
 LICENSE_SERVER_URL="https://account.adshares.pl"
+configDefault LICENSE_KEY "SRV-000000" ADSHARES
 
-readOption ADSHARES_LICENSE_KEY "Adshares Network LICENSE Key" 0
+HAVE_LICENSE=0
+readOption HAVE_LICENSE "Do you have support license from ${LICENSE_SERVER_URL}?" 1
+
+if [[ ${HAVE_LICENSE:-0} -eq 1 ]]
+then
+    readOption ADSHARES_LICENSE_KEY "Adshares Network LICENSE Key" 0
+fi
 
 LOG_FILE_PATH=${LOG_DIR}/adserver.log
 LOG_LEVEL=debug
@@ -199,19 +215,19 @@ DB_PASSWORD="${VENDOR_NAME}"
 
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env
 
-configDefault CERTBOT_NGINX 0 INSTALL
+configDefault CERTBOT_NGINX 1 INSTALL
 if [[ "${INSTALL_SCHEME^^}" == "HTTPS" ]]
 then
     readOption CERTBOT_NGINX "Do you want to setup SSL using Let's Encrypt / certbot" 1 INSTALL
 fi
 
-configDefault UPDATE_TARGETING 0 ADSERVER
-readOption UPDATE_TARGETING "Do you want to update targeting options" 1 ADSERVER
+configDefault UPDATE_TARGETING 1 ADSERVER
+#readOption UPDATE_TARGETING "Do you want to update targeting options" 1 ADSERVER
 
-configDefault UPDATE_FILTERING 0 ADSERVER
-readOption UPDATE_FILTERING "Do you want to update filtering options" 1 ADSERVER
+configDefault UPDATE_FILTERING 1 ADSERVER
+#readOption UPDATE_FILTERING "Do you want to update filtering options" 1 ADSERVER
 
-configDefault CREATE_ADMIN 0 ADSERVER
+configDefault CREATE_ADMIN 1 ADSERVER
 readOption CREATE_ADMIN "Do you want to create an admin user for $ADSHARES_OPERATOR_EMAIL" 1 ADSERVER
 
 if [[ ${ADSERVER_CREATE_ADMIN:-0} -eq 1 ]]
@@ -221,7 +237,7 @@ then
     echo "TMP_ADMIN_PASSWORD=\"$TMP_ADMIN_PASSWORD\"" >> ${VENDOR_DIR}/.tmp.env
 fi
 
-configDefault FPM_POOL 0 INSTALL
+configDefault FPM_POOL 1 INSTALL
 readOption FPM_POOL "Do you want to setup php-fpm pool" 1 INSTALL
 
 configVars | tee ${CONFIG_FILE}

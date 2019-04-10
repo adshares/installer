@@ -126,7 +126,7 @@ function configDefault {
 function configVars {
     local PREFIX=${1:-""}
 
-    for VARNAME in "${_CONFIG_VARS[@]}"
+    for VARNAME in ${_CONFIG_VARS[*]}
     do
         if [[ -z ${PREFIX} ]]
         then
