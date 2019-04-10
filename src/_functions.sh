@@ -83,11 +83,12 @@ function readOption {
         fi
 
         local _EXPR=`echo "${VARNAME}=\"\$REPLY\""`
+        echo "<<<E ${_EXPR}"
         eval "${_EXPR}"
     else
         read -e -p "${MESSAGE}: " -i "${ORIGINAL}" -n ${MAX_LENGTH} ${VARNAME}
+        echo "<<<R ${VARNAME}=\"${!VARNAME}\""
     fi
-
 }
 
 # Usage: configDefault <var_name> [<default_value> [namespace]]
@@ -102,8 +103,8 @@ function configDefault {
         VARNAME="${PREFIX}_${1}"
     fi
 
-    local ORIGINAL=${!VARNAME:-""}
-    local DEFAULT=${2:-""}
+    local ORIGINAL="${!VARNAME:-""}"
+    local DEFAULT="${2:-""}"
 
     local VALUE
     if [[ -z ${ORIGINAL} ]]
@@ -113,7 +114,8 @@ function configDefault {
         VALUE="$ORIGINAL"
     fi
 
-    local _EXPR=`echo "${VARNAME}=\"\$VALUE\""`
+    local _EXPR=`echo "${VARNAME}=\"\${VALUE}\""`
+    echo ">>> ${_EXPR}"
     eval "${_EXPR}"
 
     _CONFIG_VARS+=(${VARNAME})
@@ -140,17 +142,18 @@ function configVars {
 # save_env (template, output file)
 save_env () {
     test ! -e $1 && echo "Environment template ($1) not found." && return 1
-    test -e $2 && rm $2
-    local EXPORT=$(export -p)
+    test -e $2 && rm "$2"
 
     echo -n " < Preparing environment file: $2"
 
-    while read i
+    local _INITIAL_VALUES=`grep -v '^#' "$1" | sed -E 's|^([^=]+)=(.*)$|\1="${\1:-\2}"|g'`
+    eval `echo ${_INITIAL_VALUES}`
+
+    local _NAMES=`grep -v '^#' "$1" | sed -E 's|^([^=]+)=(.*)$|\1|g'`
+    for VARNAME in ${_NAMES}
     do
-        echo -n $i= >> $2
-        echo "$EXPORT" | grep $i= | head -n1 | awk 'NF { st = index($0,"=");printf("%s", substr($0,st+1)) }' >> $2
-        echo "" >> $2
-    done < <(cat $1 | awk -F"=" 'NF {print $1}')
+        echo "${VARNAME}=\"${!VARNAME}\"" >> "$2"
+    done
 
     echo " [DONE]"
 }
@@ -158,12 +161,17 @@ save_env () {
 # read dotenv file and export vars. Does not overwrite existing vars
 # read_env(.env file)
 read_env() {
-    if [ ! -e $1 ]
+    if ! [[ -e $1 ]]
     then
         echo " ! Environment file ($1) not found."
         return 1
     fi
-    source <(grep -v '^#' $1 | sed -E 's|^([^=]+)=(.*)$|: ${\1=\2}; export \1|g')
+
+    local _ENV=`grep -v '^#' "$1" | sed -E 's|^([^=]+)=(.*)$|\1="${\1:-\2}"|g'`
+
+    set -a
+    source <(echo ${_ENV})
+    set +a
 }
 
 VENDOR_NAME=${VENDOR_NAME:-"adshares"}

@@ -45,7 +45,7 @@ then
 
     ADSELECT_SERVER_PORT=8011
     ADSELECT_SERVER_INTERFACE=127.0.0.1
-    ADSELECT_MONGO_DB_NAME="${VENDOR_NAME}_adselect"}
+    ADSELECT_MONGO_DB_NAME="${VENDOR_NAME}_adselect"
 
     save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env
 else
