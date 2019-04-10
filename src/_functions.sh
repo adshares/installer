@@ -260,9 +260,17 @@ save_env () {
     eval "${_INITIAL_VALUES}"
 
     local _NAMES=`grep -v '^#' "$1" | sed -E 's|^([^=]+)=(.*)$|\1|g'`
+    local VALUE
     for VARNAME in ${_NAMES}
     do
-        echo "${VARNAME}=\"${!VARNAME}\"" >> "$2"
+        if [[ "${!VARNAME}" =~ ^[+-]?[0-9]+([.][0-9]+)?$ ]]
+        then
+            VALUE="${!VARNAME}"
+        else
+            VALUE="\"${!VARNAME}\""
+        fi
+
+        echo "${VARNAME}=${VALUE}" >> "$2"
     done
 
     echo " [DONE]"
