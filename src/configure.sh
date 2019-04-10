@@ -60,8 +60,6 @@ then
     APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
     APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
 
-echo -e "\n---\n$APP_URL\n$APP_ID\n$APP_KEY\n$APP_NAME\n---\n"
-
     readOption ADSHARES_ADDRESS "ADS wallet address"
     readOption ADSHARES_SECRET "ADS wallet secret"
     readOption ADSHARES_NODE_HOST "ADS node hostname"
