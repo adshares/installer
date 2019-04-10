@@ -99,10 +99,11 @@ then
     save_env ${VENDOR_DIR}/adpanel/.env.dist ${VENDOR_DIR}/adpanel/.env
 
     ADPANEL_BRAND_ASSETS_DIR=${ADPANEL_BRAND_ASSETS_DIR:-""}
-    readOption ADPANEL_BRAND_ASSETS_DIR "Directory where custom brand assets are stored. If dir does not exist, standard assets will be used" 0
-    if [[ ! -d "${ADPANEL_BRAND_ASSETS_DIR}" ]]
+    readOption ADPANEL_BRAND_ASSETS_DIR "Directory where custom brand assets are stored. If dir does not exist, standard assets will be used"
+
+    if ! [[ -z ${ADPANEL_BRAND_ASSETS_DIR} ]] && ! [[ -d "${ADPANEL_BRAND_ASSETS_DIR}" ]]
     then
-        echo "Directory ${ADPANEL_BRAND_ASSETS_DIR} doesn't exist."
+        echo "Directory ${ADPANEL_BRAND_ASSETS_DIR} doesn't exist. IGNORING"
     fi
 else
     configDefault ADPANEL_ENDPOINT "${INSTALL_SCHEME}://example.com"

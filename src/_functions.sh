@@ -155,20 +155,26 @@ function readOption {
         if [[ "${REPLY}" == "1" ]] || [[ "${REPLY^^}" == "Y" ]]
         then
             REPLY=1
-        else
+        elif [[ "${REPLY}" == "" ]]
+        then
             REPLY=${ORIGINAL}
+        else
+            REPLY=0
         fi
 
         local _EXPR="${VARNAME}=${REPLY}"
         eval "${_EXPR}"
-#        echo "<<< ${_EXPR}"
+        echo "<<< ${_EXPR}"
     else
         read -e -p "`colorize BIWhite`${MESSAGE}`colorize`: `colorize BIGreen`" -i "${ORIGINAL}" -n ${MAX_LENGTH} ${VARNAME}
         echo -n `colorize`
-#        echo "<<< ${VARNAME}=\"${!VARNAME}\""
+        echo "<<< ${VARNAME}=\"${!VARNAME}\""
     fi
 }
 
+# Set <var_name> to (optional) <default_value>,
+#   add (also optional) prefix "<namespace>_" to <var_name>
+#   include <var_name> in `configVars` listing (useful for dumping environment variables)
 # Usage: configDefault <var_name> [<default_value> [namespace]]
 function configDefault {
     local PREFIX=${3:-""}
@@ -201,13 +207,14 @@ function configDefault {
         _EXPR="${VARNAME}=\"${VALUE}\""
     fi
 
-#    echo ">>> ${_EXPR}"
+    echo ">>> ${_EXPR}"
     eval "${_EXPR}"
 
     _CONFIG_VARS+=(${VARNAME})
 }
 
 # Print like `env` would
+#   (optionally) remove "<namespace>_" prefix
 # Usage: configVars [namespace]
 function configVars {
     local PREFIX=${1:-""}
