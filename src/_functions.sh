@@ -223,16 +223,21 @@ function configVars {
         elif [[ ${VARNAME} == ${PREFIX}_* ]]
         then
             KEY="${VARNAME:${#PREFIX}}"
-        fi
-
-        if [[ "${!VARNAME}" =~ ^[+-]?[0-9]+([.][0-9]+)?$ ]]
-        then
-            VAL="${!VARNAME}"
         else
-            VAL="\"${!VARNAME}\""
+            KEY=""
         fi
 
-        echo "${KEY}=${VAL}"
+        if ! [[ -z ${KEY} ]]
+        then
+            if [[ "${!VARNAME}" =~ ^[+-]?[0-9]+([.][0-9]+)?$ ]]
+            then
+                VAL="${!VARNAME}"
+            else
+                VAL="\"${!VARNAME}\""
+            fi
+
+            echo "${KEY}=${VAL}"
+        fi
     done
 }
 
