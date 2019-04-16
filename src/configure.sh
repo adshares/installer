@@ -27,7 +27,6 @@ readOption ADPANEL "Install local >AdPanel< service?" 1 INSTALL
 
 if [[ ${INSTALL_ADPANEL:-0} -eq 1 || ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
-    unset APP_NAME
     configDefault APP_NAME "Best Adshares Adserver"
     readOption APP_NAME "Adserver name"
 
