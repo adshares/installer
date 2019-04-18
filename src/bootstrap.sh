@@ -101,7 +101,7 @@ DB_USERNAME=${VENDOR_NAME}
 DB_PASSWORD=${VENDOR_NAME}
 
 DB_DATABASES=("${VENDOR_NAME}_adserver" "${VENDOR_NAME}_aduser")
-
+set -x
 for DB_DATABASE in ${DB_DATABASES[@]}
 do
     mysql=( mysql --user=root )
@@ -124,7 +124,7 @@ do
         echo 'FLUSH PRIVILEGES;' | "${mysql[@]}"
     fi
 done
-
+set +x
 # ===
 
 crontab -r &> /dev/null || echo "No crontab to remove"
