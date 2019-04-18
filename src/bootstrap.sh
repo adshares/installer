@@ -104,7 +104,7 @@ DB_DATABASES=("${VENDOR_NAME}_adserver" "${VENDOR_NAME}_aduser")
 set -x
 for DB_DATABASE in ${DB_DATABASES[@]}
 do
-    mysql=( mysql --user=root )
+    mysql=( mysql --verbose )
 
     if [[ "$DB_DATABASE" ]]
     then
