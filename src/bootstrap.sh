@@ -101,9 +101,9 @@ DB_USERNAME=${VENDOR_NAME}
 DB_PASSWORD=${VENDOR_NAME}
 
 mysql=( mysql --verbose )
-set -x
 
 echo "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'%' IDENTIFIED BY '$DB_PASSWORD';" | "${mysql[@]}"
+echo 'FLUSH PRIVILEGES;' | "${mysql[@]}"
 echo "SELECT User,Host FROM mysql.user;" | mysql
 
 DB_DATABASES=("${VENDOR_NAME}_adserver" "${VENDOR_NAME}_aduser")
@@ -119,13 +119,8 @@ do
     fi
 
     echo "GRANT ALL ON \`$DB_DATABASE\`.* TO '$DB_USERNAME'@'%';" | "${mysql[@]}"
+    echo 'FLUSH PRIVILEGES;' | "${mysql[@]}"
 done
-
-mysql=( mysql --verbose )
-
-echo 'FLUSH PRIVILEGES;' | "${mysql[@]}"
-
-set +x
 
 # ===
 
