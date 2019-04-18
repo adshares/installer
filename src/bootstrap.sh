@@ -101,13 +101,9 @@ DB_USERNAME=${VENDOR_NAME}
 DB_PASSWORD=${VENDOR_NAME}
 
 mysql=( mysql --verbose )
+set -x
 
-if [[ "$DB_USERNAME" && "$DB_PASSWORD" ]]
-then
-    echo "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'%' IDENTIFIED BY '$DB_PASSWORD';" | "${mysql[@]}"
-
-    echo 'FLUSH PRIVILEGES;' | "${mysql[@]}"
-fi
+echo "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'%' IDENTIFIED BY '$DB_PASSWORD';" | "${mysql[@]}"
 
 DB_DATABASES=("${VENDOR_NAME}_adserver" "${VENDOR_NAME}_aduser")
 
@@ -127,6 +123,8 @@ done
 mysql=( mysql --verbose )
 
 echo 'FLUSH PRIVILEGES;' | "${mysql[@]}"
+
+set +x
 
 # ===
 
