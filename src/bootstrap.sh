@@ -100,17 +100,15 @@ rm -rf ${TEMP_DIR}
 DB_USERNAME=${VENDOR_NAME}
 DB_PASSWORD=${VENDOR_NAME}
 
-mysql=( mysql --verbose )
-
-echo "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'%' IDENTIFIED BY '$DB_PASSWORD';" | "${mysql[@]}"
-echo 'FLUSH PRIVILEGES;' | "${mysql[@]}"
+echo "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'%' IDENTIFIED BY '$DB_PASSWORD';" | mysql
+echo 'FLUSH PRIVILEGES;' | mysql
 echo "SELECT User,Host FROM mysql.user;" | mysql
 
 DB_DATABASES=("${VENDOR_NAME}_adserver" "${VENDOR_NAME}_aduser")
 
 for DB_DATABASE in ${DB_DATABASES[@]}
 do
-    mysql=( mysql --verbose )
+    mysql=( mysql )
 
     if [[ "$DB_DATABASE" ]]
     then
