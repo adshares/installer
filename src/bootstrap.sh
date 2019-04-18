@@ -104,6 +104,7 @@ mysql=( mysql --verbose )
 set -x
 
 echo "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'%' IDENTIFIED BY '$DB_PASSWORD';" | "${mysql[@]}"
+echo "SELECT User,Host FROM mysql.user;" | mysql
 
 DB_DATABASES=("${VENDOR_NAME}_adserver" "${VENDOR_NAME}_aduser")
 
@@ -130,7 +131,7 @@ set +x
 
 crontab -r &> /dev/null || echo "No crontab to remove"
 
-if [[ ${SKIP_DB_CRON_BACKUP:-1} -eq 0 ]]
+if [[ ${SKIP_DB_CRON_BACKUP:-0} -eq 0 ]]
 then
     TEMP_FILE="$(mktemp)-crontab.txt"
 
