@@ -196,12 +196,12 @@ configDefault LICENSE_SERVER_URL "https://account.adshares.pl" ADSHARES
 LICENSE_SERVER_URL="https://account.adshares.pl"
 configDefault LICENSE_KEY "SRV-000000" ADSHARES
 
-HAVE_LICENSE=0
-readOption HAVE_LICENSE "Do you have support license from ${LICENSE_SERVER_URL}?" 1
+configDefault HAVE_LICENSE 0 ADSHARES
+readOption HAVE_LICENSE "Do you have support license from ${LICENSE_SERVER_URL}?" 1 ADSHARES
 
-if [[ ${HAVE_LICENSE:-0} -eq 1 ]]
+if [[ ${ADSHARES_HAVE_LICENSE:-0} -eq 1 ]]
 then
-    readOption ADSHARES_LICENSE_KEY "Adshares Network LICENSE Key" 0
+    readOption LICENSE_KEY "Adshares Network LICENSE Key" 0 ADSHARES
 fi
 
 LOG_FILE_PATH=${LOG_DIR}/adserver.log
