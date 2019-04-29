@@ -258,7 +258,7 @@ save_env () {
 
     if [[ -e $2 ]]
     then
-        mv --verbose "$2" "${BACKUP_DIR}/$SERVICE_NAME-$NOW-"`$(basename "$2")`
+        mv --verbose "$2" "${BACKUP_DIR}/$SERVICE_NAME-$NOW-"`basename $2`
     fi
 
     echo -n " < Preparing environment file: $2"
