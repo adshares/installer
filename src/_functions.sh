@@ -240,7 +240,7 @@ function configVars {
             then
                 VAL="${!VARNAME}"
             else
-                VAL="\"${!VARNAME}\""
+                VAL="'${!VARNAME}'"
             fi
 
             echo "${KEY}=${VAL}"
