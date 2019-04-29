@@ -93,7 +93,7 @@ then
 
     BRAND_ASSETS_DIR=${ADPANEL_BRAND_ASSETS_DIR:-""}
 
-    save_env ${VENDOR_DIR}/adpanel/.env.dist ${VENDOR_DIR}/adpanel/.env
+    save_env ${VENDOR_DIR}/adpanel/.env.dist ${VENDOR_DIR}/adpanel/.env adpanel
 
     ADPANEL_BRAND_ASSETS_DIR=${ADPANEL_BRAND_ASSETS_DIR:-""}
     readOption ADPANEL_BRAND_ASSETS_DIR "Directory where custom brand assets are stored. If dir does not exist, standard assets will be used"
@@ -121,7 +121,7 @@ then
     ADSELECT_SERVER_INTERFACE=127.0.0.1
     ADSELECT_MONGO_DB_NAME="${VENDOR_NAME}_adselect"
 
-    save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env
+    save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env adselect
 else
     INSTALL_ADSELECT=0
     ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
@@ -142,7 +142,7 @@ then
     ADPAY_SERVER_INTERFACE=127.0.0.1
     ADPAY_MONGO_DB_NAME="${VENDOR_NAME}_adpay"
 
-    save_env ${VENDOR_DIR}/adpay/.env.dist ${VENDOR_DIR}/adpay/.env
+    save_env ${VENDOR_DIR}/adpay/.env.dist ${VENDOR_DIR}/adpay/.env adpay
 else
     INSTALL_ADPAY=0
     ADPAY_ENDPOINT=${ADPAY_ENDPOINT:-"https://example.com"}
@@ -177,7 +177,7 @@ then
         DATABASE_URL="mysql://${VENDOR_NAME}:${VENDOR_NAME}@127.0.0.1:3306/${VENDOR_NAME}_aduser"
     fi
 
-    save_env ${VENDOR_DIR}/aduser/.env.local.dist ${VENDOR_DIR}/aduser/.env.local
+    save_env ${VENDOR_DIR}/aduser/.env.local.dist ${VENDOR_DIR}/aduser/.env.local aduser
 
     ADUSER_BASE_URL="${INSTALL_SCHEME}://${INSTALL_DATA_HOSTNAME}"
 
@@ -211,7 +211,7 @@ DB_DATABASE="${VENDOR_NAME}_adserver"
 DB_USERNAME="${VENDOR_NAME}"
 DB_PASSWORD="${VENDOR_NAME}"
 
-save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env
+save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env adserver
 
 configDefault CERTBOT_NGINX 1 INSTALL
 if [[ "${INSTALL_SCHEME^^}" == "HTTPS" ]]

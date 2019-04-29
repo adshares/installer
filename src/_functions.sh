@@ -254,6 +254,7 @@ function configVars {
 # save_env (template, output file)
 save_env () {
     test ! -e $1 && echo "Environment template ($1) not found." && return 1
+    local SERVICE_NAME="$3"
 
     if [[ -e $2 ]]
     then
