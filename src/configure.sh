@@ -88,7 +88,9 @@ then
     APP_HOST=${INSTALL_HOSTNAME}
 
     read_env ${VENDOR_DIR}/adpanel/.env || read_env ${VENDOR_DIR}/adpanel/.env.dist
-echo -e "\n\n####\n$APP_CURRENCY_CODE\t$APP_CURRENCY_SYMBOL\n\n"
+echo -e "\n\n${VENDOR_DIR}/adpanel/.env"
+echo -e "\n\n####"
+echo -e "\n\n$APP_CURRENCY_CODE\t$APP_CURRENCY_SYMBOL\n\n"
 
     ADPANEL_URL="${INSTALL_SCHEME}://$INSTALL_HOSTNAME"
 
