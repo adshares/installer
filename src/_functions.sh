@@ -258,6 +258,7 @@ save_env () {
     if [[ -e $2 ]]
     then
         mv "$2" "${BACKUP_DIR}/$SERVICE_NAME-$2-$NOW"
+        echo "-> ${BACKUP_DIR}/$SERVICE_NAME-$2-$NOW"
     fi
 
     echo -n " < Preparing environment file: $2"
