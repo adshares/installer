@@ -267,7 +267,7 @@ save_env () {
         then
             VALUE="${!VARNAME}"
         else
-            VALUE="'${!VARNAME}'"
+            VALUE="\"${!VARNAME}\""
         fi
 
         echo "${VARNAME}=${VALUE}" >> "$2"
@@ -285,7 +285,7 @@ read_env() {
         return 1
     fi
 
-    local _ENV=`grep -v '^#' "$1" | sed -E 's|^([^=]+)=(.*)$|\1="${\1:-\2}"|g'`
+    local _ENV=`grep -v '^#' "/opt/adshares/adserver/.env" | sed -E 's|^([^=]+)=('"'"')*([^'"'"']*)('"'"')*$|\1="${\1:-\3}"|g'`
 
     set -a
     source <(echo ${_ENV})
