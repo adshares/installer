@@ -267,7 +267,7 @@ save_env () {
         then
             VALUE="${!VARNAME}"
         else
-            VALUE="\"${!VARNAME}\""
+            VALUE="'${!VARNAME}'"
         fi
 
         echo "${VARNAME}=${VALUE}" >> "$2"
