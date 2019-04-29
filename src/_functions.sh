@@ -77,6 +77,8 @@ On_IPurple='\e[0;105m'  # Purple
 On_ICyan='\e[0;106m'    # Cyan
 On_IWhite='\e[0;107m'   # White
 
+NOW=${NOW:-`date +"%Y%m%d.%H%M%S"`}
+
 function versionFromGit {
     local _PWD
     if [[ -z ${1:-""} ]]
@@ -267,7 +269,7 @@ save_env () {
         then
             VALUE="${!VARNAME}"
         else
-            VALUE="\"${!VARNAME}\""
+            VALUE="'${!VARNAME}'"
         fi
 
         echo "${VARNAME}=${VALUE}" >> "$2"
