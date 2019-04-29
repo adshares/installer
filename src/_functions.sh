@@ -254,7 +254,11 @@ function configVars {
 # save_env (template, output file)
 save_env () {
     test ! -e $1 && echo "Environment template ($1) not found." && return 1
-    test -e $2 && rm "$2"
+
+    if [[ -e $2 ]]
+    then
+        mv "$2" "${BACKUP_DIR}/$SERVICE_NAME-$2-$NOW"
+    fi
 
     echo -n " < Preparing environment file: $2"
 
