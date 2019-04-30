@@ -106,9 +106,9 @@ then
 
         if [[ ${INSTALL_CERTBOT_NGINX:-0} -eq 1 ]]
         then
-            ! [[ -z ${INSTALL_HOSTNAME} ]] && [[ ${SERVICE_NAME} == "adpanel" ]] && certbot --nginx --cert-name ${INSTALL_HOSTNAME} --domains ${INSTALL_HOSTNAME}
-            ! [[ -z ${INSTALL_API_HOSTNAME} ]] && [[ ${SERVICE_NAME} == "adserver" ]] && certbot --nginx --cert-name ${INSTALL_API_HOSTNAME} --domains ${INSTALL_API_HOSTNAME}
-            ! [[ -z ${INSTALL_DATA_HOSTNAME} ]] && [[ ${SERVICE_NAME} == "aduser" ]] && certbot --nginx --cert-name ${INSTALL_DATA_HOSTNAME} --domains ${INSTALL_DATA_HOSTNAME}
+            ! [[ -z ${INSTALL_HOSTNAME} ]] && [[ ${SERVICE_NAME} == "adpanel" ]] && certbot --keep --agree-tos --redirect --nginx --cert-name ${INSTALL_HOSTNAME} --domains ${INSTALL_HOSTNAME}
+            ! [[ -z ${INSTALL_API_HOSTNAME} ]] && [[ ${SERVICE_NAME} == "adserver" ]] && certbot --keep --agree-tos --redirect --nginx --cert-name ${INSTALL_API_HOSTNAME} --domains ${INSTALL_API_HOSTNAME}
+            ! [[ -z ${INSTALL_DATA_HOSTNAME} ]] && [[ ${SERVICE_NAME} == "aduser" ]] && certbot --keep --agree-tos --redirect --nginx --cert-name ${INSTALL_DATA_HOSTNAME} --domains ${INSTALL_DATA_HOSTNAME}
         fi
     done
 fi
