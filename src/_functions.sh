@@ -77,6 +77,8 @@ On_IPurple='\e[0;105m'  # Purple
 On_ICyan='\e[0;106m'    # Cyan
 On_IWhite='\e[0;107m'   # White
 
+NOW=${NOW:-`date +"%Y%m%d.%H%M%S"`}
+
 function versionFromGit {
     local _PWD
     if [[ -z ${1:-""} ]]
@@ -240,7 +242,7 @@ function configVars {
             then
                 VAL="${!VARNAME}"
             else
-                VAL="\"${!VARNAME}\""
+                VAL="'${!VARNAME}'"
             fi
 
             echo "${KEY}=${VAL}"
@@ -252,7 +254,12 @@ function configVars {
 # save_env (template, output file)
 save_env () {
     test ! -e $1 && echo "Environment template ($1) not found." && return 1
-    test -e $2 && rm "$2"
+    local SERVICE_NAME="$3"
+
+    if [[ -e $2 ]]
+    then
+        mv --verbose "$2" "${BACKUP_DIR}/$NOW-$SERVICE_NAME-"`basename $2`
+    fi
 
     echo -n " < Preparing environment file: $2"
 
@@ -267,7 +274,7 @@ save_env () {
         then
             VALUE="${!VARNAME}"
         else
-            VALUE="\"${!VARNAME}\""
+            VALUE="'${!VARNAME}'"
         fi
 
         echo "${VARNAME}=${VALUE}" >> "$2"
@@ -285,7 +292,7 @@ read_env() {
         return 1
     fi
 
-    local _ENV=`grep -v '^#' "$1" | sed -E 's|^([^=]+)=(.*)$|\1="${\1:-\2}"|g'`
+    local _ENV=`grep -v '^#' "$1" | sed -E 's|^([^=]+)=('"'"')*([^'"'"']*)('"'"')*$|\1="${\1:-\3}"|g'`
 
     set -a
     source <(echo ${_ENV})
