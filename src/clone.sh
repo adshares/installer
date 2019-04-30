@@ -17,6 +17,7 @@ echo "### Clone or update source for ${SERVICE_NAME} (${GIT_BRANCH_NAME})"
 git clone --branch ${GIT_BRANCH_NAME} ${GIT_REPO_BASE_URL}/${SERVICE_NAME}.git ${VENDOR_DIR}/${SERVICE_NAME} &> /dev/null \
 || (\
     cd ${VENDOR_DIR}/${SERVICE_NAME} \
+    && git reset --hard \
     && git fetch --tags --all \
     && ([[ $(git rev-parse --abbrev-ref HEAD) == ${GIT_BRANCH_NAME} ]] || git checkout --force -B ${GIT_BRANCH_NAME} origin/${GIT_BRANCH_NAME}) \
     && git pull \
