@@ -117,6 +117,7 @@ then
 
     unset APP_PORT
     unset APP_HOST
+    unset APP_NAME
 
     read_env ${VENDOR_DIR}/adselect/.env.local || read_env ${VENDOR_DIR}/adselect/.env
 
@@ -124,8 +125,8 @@ then
     ADSELECT_SERVER_INTERFACE=127.0.0.1
     ADSELECT_MONGO_DB_NAME="${VENDOR_NAME}_adselect"
 
-    APP_PORT=${APP_PORT:-ADSELECT_SERVER_PORT}
-    APP_HOST=${APP_HOST:-ADSELECT_SERVER_INTERFACE}
+    APP_PORT=${ADSELECT_SERVER_PORT}
+    APP_HOST=${ADSELECT_SERVER_INTERFACE}
 
     save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
 else
