@@ -115,13 +115,19 @@ then
     INSTALL_ADSELECT=1
     ADSELECT_ENDPOINT=http://localhost:8011
 
-    read_env ${VENDOR_DIR}/adselect/.env || read_env ${VENDOR_DIR}/adselect/.env.dist
+    unset APP_PORT
+    unset APP_HOST
+
+    read_env ${VENDOR_DIR}/adselect/.env.local || read_env ${VENDOR_DIR}/adselect/.env
 
     ADSELECT_SERVER_PORT=8011
     ADSELECT_SERVER_INTERFACE=127.0.0.1
     ADSELECT_MONGO_DB_NAME="${VENDOR_NAME}_adselect"
 
-    save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env adselect
+    APP_PORT=${APP_PORT:-ADSELECT_SERVER_PORT}
+    APP_HOST=${APP_HOST:-ADSELECT_SERVER_INTERFACE}
+
+    save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
 else
     INSTALL_ADSELECT=0
     ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
