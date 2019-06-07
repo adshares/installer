@@ -231,6 +231,7 @@ unset APP_PORT
 unset APP_HOST
 unset APP_NAME
 
+set -x
 APP_NAME=${APP_NAME:-$INSTALL_APP_NAME}
 APP_HOST=${API_HOSTNAME}
 LOG_FILE_PATH=${LOG_DIR}/adserver.log
@@ -239,6 +240,7 @@ LOG_CHANNEL=${LOG_CHANNEL:-single}
 DB_DATABASE="${VENDOR_NAME}_adserver"
 DB_USERNAME="${VENDOR_NAME}"
 DB_PASSWORD="${VENDOR_NAME}"
+set +x
 
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env adserver
 
