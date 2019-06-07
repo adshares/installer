@@ -28,11 +28,9 @@ then
     do
         echo "Copy ${FILE} to ${TARGET_DIR}"
 
-set -x
         [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]]       && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
         [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env.local ]] && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env.local && set +a
-set +x
-echo ${APP_PORT:-0},${APP_HOST:-""},${VENDOR_NAME:-""},${VENDOR_USER:-""}
+echo ${VENDOR_NAME:-""},${VENDOR_USER:-""} ${APP_HOST:-""}:${APP_PORT:-0}
 
         envsubst '${APP_PORT},${APP_HOST},${VENDOR_NAME},${VENDOR_USER}' < ${FILE} | tee ${TARGET_DIR}/${VENDOR_NAME}-${SERVICE_NAME}-$(basename ${FILE})
     done
