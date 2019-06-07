@@ -32,7 +32,7 @@ set -x
         [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]]       && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
         [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env.local ]] && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env.local && set +a
 set +x
-echo "${APP_PORT},${APP_HOST},${VENDOR_NAME},${VENDOR_USER}"
+echo ${APP_PORT:-0},${APP_HOST:-""},${VENDOR_NAME:-""},${VENDOR_USER:-""}
 
         envsubst '${APP_PORT},${APP_HOST},${VENDOR_NAME},${VENDOR_USER}' < ${FILE} | tee ${TARGET_DIR}/${VENDOR_NAME}-${SERVICE_NAME}-$(basename ${FILE})
     done
