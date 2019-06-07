@@ -126,6 +126,9 @@ then
     ADSELECT_SERVER_INTERFACE=127.0.0.1
     ADSELECT_MONGO_DB_NAME="${VENDOR_NAME}_adselect"
 
+    APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
+    APP_VERSION=$(versionFromGit ${VENDOR_DIR}/aduser)
+
     APP_PORT=${ADSELECT_SERVER_PORT}
     APP_HOST=${ADSELECT_SERVER_INTERFACE}
     ES_NAMESPACE=${VENDOR_NAME:-"adshares"}
@@ -136,7 +139,7 @@ else
     ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
     readOption ADSELECT_ENDPOINT "External AdSelect service endpoint"
 fi
-set+x
+set +x
 
 configDefault ADPAY 1 INSTALL
 readOption ADPAY "Install local >AdPay< service?" 1 INSTALL
