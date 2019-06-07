@@ -212,6 +212,10 @@ then
     readOption LICENSE_KEY "Adshares Network LICENSE Key" 0 ADSHARES
 fi
 
+unset APP_PORT
+unset APP_HOST
+unset APP_NAME
+
 LOG_FILE_PATH=${LOG_DIR}/adserver.log
 LOG_LEVEL=debug
 LOG_CHANNEL=${LOG_CHANNEL:-single}
