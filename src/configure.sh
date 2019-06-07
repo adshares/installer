@@ -110,6 +110,7 @@ fi
 configDefault ADSELECT 1 INSTALL
 readOption ADSELECT "Install local >AdSelect< service?" 1 INSTALL
 
+set -x
 if [[ ${INSTALL_ADSELECT:-0} -eq 1 ]]
 then
     INSTALL_ADSELECT=1
@@ -135,6 +136,7 @@ else
     ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
     readOption ADSELECT_ENDPOINT "External AdSelect service endpoint"
 fi
+set+x
 
 configDefault ADPAY 1 INSTALL
 readOption ADPAY "Install local >AdPay< service?" 1 INSTALL
