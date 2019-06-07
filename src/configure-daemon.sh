@@ -28,10 +28,15 @@ then
     do
         echo "Copy ${FILE} to ${TARGET_DIR}"
 
+set -x
+
         [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]]       && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
         [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env.local ]] && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env.local && set +a
 
         envsubst '${APP_PORT},${APP_HOST},${VENDOR_NAME},${VENDOR_USER}' < ${FILE} | tee ${TARGET_DIR}/${VENDOR_NAME}-${SERVICE_NAME}-$(basename ${FILE})
+
+set +x
+
     done
 
     echo "Restart ${DAEMON_SERVICE_NAME}"
