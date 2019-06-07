@@ -28,10 +28,11 @@ readOption ADPANEL "Install local >AdPanel< service?" 1 INSTALL
 if [[ ${INSTALL_ADPANEL:-0} -eq 1 || ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
     configDefault APP_NAME "Best Adshares Adserver" INSTALL
-    readOption APP_NAME "Adserver name" INSTALL
+    readOption APP_NAME "Adserver name" 0 INSTALL
 
     configDefault HTTPS 1 INSTALL
     readOption HTTPS "Configure for HTTPS (strongly recommended)?" 1 INSTALL
+
     if [[ ${INSTALL_HTTPS:-0} -eq 1 ]]
     then
         INSTALL_SCHEME=https
@@ -186,6 +187,7 @@ then
     APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
     APP_VERSION=$(versionFromGit ${VENDOR_DIR}/aduser)
     APP_HOST=${INSTALL_DATA_HOSTNAME}
+
     readOption APP_NAME "AdUser Service Name"
 
     readOption RECAPTCHA_SITE_KEY "Google reCAPTCHA v3 site key"
