@@ -27,8 +27,8 @@ readOption ADPANEL "Install local >AdPanel< service?" 1 INSTALL
 
 if [[ ${INSTALL_ADPANEL:-0} -eq 1 || ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
-    configDefault APP_NAME "Best Adshares Adserver"
-    readOption APP_NAME "Adserver name"
+    configDefault APP_NAME "Best Adshares Adserver" INSTALL
+    readOption APP_NAME "Adserver name" INSTALL
 
     configDefault HTTPS 1 INSTALL
     readOption HTTPS "Configure for HTTPS (strongly recommended)?" 1 INSTALL
@@ -53,7 +53,13 @@ fi
 
 if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
+    unset APP_PORT
+    unset APP_HOST
+    unset APP_NAME
+    unset APP_ENV
+
     read_env ${VENDOR_DIR}/adserver/.env || read_env ${VENDOR_DIR}/adserver/.env.dist
+    APP_NAME=${APP_NAME:-$INSTALL_APP_NAME}
 
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
     APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
@@ -84,10 +90,15 @@ then
     INSTALL_ADPANEL=1
     ADSERVER_URL="$APP_URL"
 
+    unset APP_PORT
+    unset APP_HOST
+    unset APP_NAME
     unset APP_ENV
+
     APP_HOST=${INSTALL_HOSTNAME}
 
     read_env ${VENDOR_DIR}/adpanel/.env || read_env ${VENDOR_DIR}/adpanel/.env.dist
+    APP_NAME=${APP_NAME:-$INSTALL_APP_NAME}
 
     ADPANEL_URL="${INSTALL_SCHEME}://$INSTALL_HOSTNAME"
 
@@ -110,7 +121,6 @@ fi
 configDefault ADSELECT 1 INSTALL
 readOption ADSELECT "Install local >AdSelect< service?" 1 INSTALL
 
-set -x
 if [[ ${INSTALL_ADSELECT:-0} -eq 1 ]]
 then
     INSTALL_ADSELECT=1
@@ -139,7 +149,6 @@ else
     ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
     readOption ADSELECT_ENDPOINT "External AdSelect service endpoint"
 fi
-set +x
 
 configDefault ADPAY 1 INSTALL
 readOption ADPAY "Install local >AdPay< service?" 1 INSTALL
@@ -204,6 +213,7 @@ else
 fi
 
 APP_HOST=${INSTALL_API_HOSTNAME}
+APP_NAME=${APP_NAME:-$INSTALL_APP_NAME}
 
 configDefault LICENSE_SERVER_URL "https://account.adshares.pl" ADSHARES
 LICENSE_SERVER_URL="https://account.adshares.pl"
@@ -221,6 +231,8 @@ unset APP_PORT
 unset APP_HOST
 unset APP_NAME
 
+APP_NAME=${APP_NAME:-$INSTALL_APP_NAME}
+APP_HOST=${API_HOSTNAME}
 LOG_FILE_PATH=${LOG_DIR}/adserver.log
 LOG_LEVEL=debug
 LOG_CHANNEL=${LOG_CHANNEL:-single}
