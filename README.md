@@ -24,3 +24,13 @@ Script will ask you to provide your ADS wallet credentials, so please create ADS
 
 > Note that there are many environment variables you can override to tweak the behavior of the services. 
 > Every project has the `.env` file where you can find most of configuration options. 
+
+
+```bash
+docker run --publish 1025:1025 --publish 8025:8025 --detach --restart always mailhog/mailhog
+sudo -H SKIP_SERVICES=1 bin/install.sh
+```
+
+```bash
+sudo -H SKIP_BOOTSTRAP=1 SKIP_CLONE=1 bin/install.sh
+```
