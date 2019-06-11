@@ -81,6 +81,7 @@ then
     readOption MAIL_FROM_ADDRESS "mail from address"
     readOption MAIL_FROM_NAME "mail from name"
 
+echo "XXX>> $MAIL_ENCRYPTION"
     if [[ ${MAIL_ENCRYPTION:-""} == "none" ]]
     then
         MAIL_ENCRYPTION=""
