@@ -82,12 +82,8 @@ then
     readOption MAIL_FROM_NAME "mail from name"
 
 echo "XXX>> $MAIL_ENCRYPTION"
-    if [[ ${MAIL_ENCRYPTION:-""} == "none" ]]
-    then
-        MAIL_ENCRYPTION=""
-    else
-        MAIL_ENCRYPTION="tls"
-    fi
+MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-"tls"}
+echo "XXX>> $MAIL_ENCRYPTION"
 
     configDefault ADSERVER_CRON 1 INSTALL
     readOption ADSERVER_CRON "Install AdServer cron jobs?" 1 INSTALL
