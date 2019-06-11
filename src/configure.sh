@@ -80,7 +80,13 @@ then
     readOption MAIL_PASSWORD "mail smtp password"
     readOption MAIL_FROM_ADDRESS "mail from address"
     readOption MAIL_FROM_NAME "mail from name"
-    MAIL_ENCRYPTION="tls"
+
+    if [[ ${MAIL_ENCRYPTION:-""} == "none" ]]
+    then
+        MAIL_ENCRYPTION=""
+    else
+        MAIL_ENCRYPTION="tls"
+    fi
 
     configDefault ADSERVER_CRON 1 INSTALL
     readOption ADSERVER_CRON "Install AdServer cron jobs?" 1 INSTALL
