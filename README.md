@@ -35,7 +35,7 @@ docker run --publish 1025:1025 --publish 8025:8025 --detach --restart always mai
 sudo -H SKIP_SERVICES=1 bin/install.sh
 ```
 
-### Deploy all services from `develop` branches
+### Deploy all services from `develop` branches without reinstalling system dependencies
 ```bash
 sudo -H SKIP_BOOTSTRAP=1 bin/install.sh -b develop
 ```
