@@ -209,7 +209,7 @@ function configDefault {
         _EXPR="${VARNAME}=\"${VALUE}\""
     fi
 
-    echo ">>> ${_EXPR}"
+    echo "D>> ${_EXPR}"
     eval "${_EXPR}"
 
     _CONFIG_VARS+=(${VARNAME})
