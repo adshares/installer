@@ -15,7 +15,7 @@ chmod +x ${SCRIPT_DIR}/*.sh
 SERVICES=$(cat ${SCRIPT_DIR}/services.txt)
 BRANCH=master
 
-while [[ "$1" != "" ]]
+while [[ "${1:-""}" != "" ]]
 do
     case "$1" in
         --service | -s )
