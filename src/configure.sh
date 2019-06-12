@@ -82,6 +82,7 @@ then
     readOption MAIL_FROM_NAME "mail from name"
 
     MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-"tls"}
+    readOption MAIL_ENCRYPTION "mail encryption ('none' to skip encryption, usually 'tls')"
 
     configDefault ADSERVER_CRON 1 INSTALL
     readOption ADSERVER_CRON "Install AdServer cron jobs?" 1 INSTALL

@@ -15,7 +15,7 @@
 
 ```bash
 git clone https://github.com/adshares/installer.git
-cd ./installer/
+cd installer
 sudo -H bin/install.sh
 ```
 > The script above creates a separate `adshares` user (without sudo privileges) to be the owner of all the installed services.
@@ -25,12 +25,22 @@ Script will ask you to provide your ADS wallet credentials, so please create ADS
 > Note that there are many environment variables you can override to tweak the behavior of the services. 
 > Every project has the `.env` file where you can find most of configuration options. 
 
-
+## Examples:
+### Deploy `mailhog`
 ```bash
 docker run --publish 1025:1025 --publish 8025:8025 --detach --restart always mailhog/mailhog
+```
+### Prepare system dependencies without deploying 
+```bash
 sudo -H SKIP_SERVICES=1 bin/install.sh
 ```
 
+### Deploy all services from `develop` branches
 ```bash
-sudo -H SKIP_BOOTSTRAP=1 SKIP_CLONE=1 bin/install.sh
+sudo -H SKIP_BOOTSTRAP=1 bin/install.sh -b develop
+```
+
+### Simple one-liner when you have `installer` in your home dir - this installs all the currently checked out services
+```bash
+cd ~/installer/ && git pull && sudo -H SKIP_BOOTSTRAP=1 SKIP_CLONE=1 bin/install.sh
 ```
