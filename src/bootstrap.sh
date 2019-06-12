@@ -84,8 +84,6 @@ apt-get --yes --no-install-recommends install \
 
 pip install --system pipenv
 
-# ===
-
 # === ElasticSearch
 curl https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.1.1-amd64.deb -sS -o ${TEMP_DIR}/elasticsearch-7.1.1-amd64.deb
 curl  https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.1.1-amd64.deb.sha512 -sS -o ${TEMP_DIR}/elasticsearch-7.1.1-amd64.deb.sha512
