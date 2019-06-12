@@ -12,21 +12,23 @@ export VENDOR_USER
 cp -r ${SRC_DIR}/* ${SCRIPT_DIR}
 chmod +x ${SCRIPT_DIR}/*.sh
 
-if [[ -z ${1:-""} ]]
-then
-    SERVICES=$(cat ${SCRIPT_DIR}/services.txt)
-else
-    SERVICES=($1)
-    shift
-fi
+SERVICES=$(cat ${SCRIPT_DIR}/services.txt)
+BRANCH=master
 
-if [[ -z ${1:-""} ]]
-then
-    BRANCH=master
-else
-    BRANCH="$1"
+while [[ "$1" != "" ]]
+do
+    case "$1" in
+        --service | -s )
+            SERVICES=("$2")
+            shift
+        ;;
+        --branch | -b )
+            BRANCH="$2"
+            shift
+        ;;
+    esac
     shift
-fi
+done
 
 if [[ ${SKIP_BOOTSTRAP:-0} -ne 1 ]]
 then
