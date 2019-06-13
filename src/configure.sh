@@ -18,7 +18,6 @@ configDefault API_HOSTNAME "`php -r 'if(count($argv) == 3) echo parse_url($argv[
 
 configDefault DATA_HOSTNAME "`php -r 'if(count($argv) == 3) echo parse_url($argv[1])[$argv[2]];' "$ADUSER_BASE_URL" host 2>/dev/null`" INSTALL
 
-
 configDefault ADSERVER 1 INSTALL
 readOption ADSERVER "Install local >AdServer< service?" 1 INSTALL
 
