@@ -127,7 +127,6 @@ readOption ADSELECT "Install local >AdSelect< service?" 1 INSTALL
 if [[ ${INSTALL_ADSELECT:-0} -eq 1 ]]
 then
     INSTALL_ADSELECT=1
-    ADSELECT_ENDPOINT=http://localhost:8011
 
     unset APP_PORT
     unset APP_HOST
@@ -135,23 +134,21 @@ then
 
     read_env ${VENDOR_DIR}/adselect/.env.local || read_env ${VENDOR_DIR}/adselect/.env
 
-    ADSELECT_SERVER_PORT=${APP_PORT:-8011}
-    ADSELECT_SERVER_INTERFACE=127.0.0.1
-    ADSELECT_MONGO_DB_NAME="${VENDOR_NAME}_adselect"
-
     APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
-    APP_VERSION=$(versionFromGit ${VENDOR_DIR}/aduser)
+    APP_VERSION=$(versionFromGit ${VENDOR_DIR}/adselect)
 
-    APP_PORT=${ADSELECT_SERVER_PORT}
-    APP_HOST=${ADSELECT_SERVER_INTERFACE}
-    ES_NAMESPACE=${ADSELECT_MONGO_DB_NAME}
+    APP_PORT=${APP_PORT:-8011}
+    APP_HOST=localhost
+    ES_NAMESPACE="${VENDOR_NAME}_adselect"
 
     save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
+
+    ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"http://${APP_HOST}:${APP_PORT}"}
 else
     INSTALL_ADSELECT=0
     ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
-    readOption ADSELECT_ENDPOINT "External AdSelect service endpoint"
 fi
+readOption ADSELECT_ENDPOINT "External AdSelect service endpoint"
 
 configDefault ADPAY 1 INSTALL
 readOption ADPAY "Install local >AdPay< service?" 1 INSTALL
