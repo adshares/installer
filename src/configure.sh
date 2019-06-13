@@ -144,7 +144,7 @@ then
 
     APP_PORT=${ADSELECT_SERVER_PORT}
     APP_HOST=${ADSELECT_SERVER_INTERFACE}
-    ES_NAMESPACE=${VENDOR_NAME:-"adshares"}
+    ES_NAMESPACE="${VENDOR_NAME}_adselect"
 
     save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
 else
