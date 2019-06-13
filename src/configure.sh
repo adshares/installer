@@ -24,9 +24,10 @@ readOption ADSERVER "Install local >AdServer< service?" 1 INSTALL
 configDefault ADPANEL 1 INSTALL
 readOption ADPANEL "Install local >AdPanel< service?" 1 INSTALL
 
+configDefault APP_NAME "Best Adshares Adserver" INSTALL
+
 if [[ ${INSTALL_ADPANEL:-0} -eq 1 || ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
-    configDefault APP_NAME "Best Adshares Adserver" INSTALL
     readOption APP_NAME "Adserver name" 0 INSTALL
 
     configDefault HTTPS 1 INSTALL
@@ -134,7 +135,7 @@ then
 
     read_env ${VENDOR_DIR}/adselect/.env.local || read_env ${VENDOR_DIR}/adselect/.env
 
-    ADSELECT_SERVER_PORT=8011
+    ADSELECT_SERVER_PORT=${APP_PORT:-8011}
     ADSELECT_SERVER_INTERFACE=127.0.0.1
     ADSELECT_MONGO_DB_NAME="${VENDOR_NAME}_adselect"
 
