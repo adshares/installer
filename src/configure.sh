@@ -144,7 +144,7 @@ then
 
     APP_PORT=${ADSELECT_SERVER_PORT}
     APP_HOST=${ADSELECT_SERVER_INTERFACE}
-    ES_NAMESPACE="${VENDOR_NAME}_adselect"
+    ES_NAMESPACE=${ADSELECT_MONGO_DB_NAME}
 
     save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
 else
