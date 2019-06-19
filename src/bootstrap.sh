@@ -4,6 +4,7 @@ echo " > $0 $*"
 
 export DEBIAN_FRONTEND=noninteractive
 
+apt-get --yes update
 apt-get --yes install software-properties-common git curl gettext-base unzip supervisor vim htop screen tree
 
 # ===
