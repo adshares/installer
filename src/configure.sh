@@ -117,8 +117,9 @@ then
         echo "Directory ${ADPANEL_BRAND_ASSETS_DIR} doesn't exist. IGNORING"
     fi
 else
-    configDefault ADPANEL_ENDPOINT "${INSTALL_SCHEME}://example.com"
+    configDefault ADPANEL_ENDPOINT ${ADPANEL_URL:-"${INSTALL_SCHEME}://example.com"}
     readOption ADPANEL_ENDPOINT "External AdPanel service endpoint"
+    ADPANEL_URL=${ADPANEL_ENDPOINT:-${ADPANEL_URL}}
 fi
 
 configDefault ADSELECT 1 INSTALL
@@ -128,23 +129,36 @@ if [[ ${INSTALL_ADSELECT:-0} -eq 1 ]]
 then
     INSTALL_ADSELECT=1
 
-    unset APP_PORT
-    unset APP_HOST
-    unset APP_NAME
+    if [[ ${INSTALL_ADSELECT_OLD:-0} -eq 1 ]]
+    then
+        read_env ${VENDOR_DIR}/adselect/.env || read_env ${VENDOR_DIR}/adselect/.env.dist
 
-    read_env ${VENDOR_DIR}/adselect/.env.local || read_env ${VENDOR_DIR}/adselect/.env
+        ADSELECT_SERVER_PORT=${ADSELECT_SERVER_PORT:-8111}
+        ADSELECT_SERVER_INTERFACE=${ADSELECT_SERVER_INTERFACE:-127.0.0.1}
+        ADSELECT_MONGO_DB_NAME=${ADSELECT_MONGO_DB_NAME:-"${VENDOR_NAME}_adselect"}
 
-    APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
-    APP_VERSION=$(versionFromGit ${VENDOR_DIR}/adselect)
+        save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env adselect
+        ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"http://${ADSELECT_SERVER_INTERFACE}:${ADSELECT_SERVER_PORT}"}
+        readOption ADSELECT_ENDPOINT "Internal OLD AdSelect service endpoint"
+    else
+        unset APP_PORT
+        unset APP_HOST
+        unset APP_NAME
 
-    APP_PORT=${APP_PORT:-8011}
-    APP_HOST=localhost
-    ES_NAMESPACE="${VENDOR_NAME}_adselect"
+        read_env ${VENDOR_DIR}/adselect/.env.local || read_env ${VENDOR_DIR}/adselect/.env
 
-    save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
+        APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
+        APP_VERSION=$(versionFromGit ${VENDOR_DIR}/adselect)
 
-    ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"http://${APP_HOST}:${APP_PORT}"}
-    readOption ADSELECT_ENDPOINT "Internal AdSelect service endpoint"
+        APP_PORT=${APP_PORT:-8011}
+        APP_HOST=localhost
+        ES_NAMESPACE="${VENDOR_NAME}_adselect"
+
+        save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
+
+        ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"http://${APP_HOST}:${APP_PORT}"}
+        readOption ADSELECT_ENDPOINT "Internal AdSelect service endpoint"
+    fi
 else
     INSTALL_ADSELECT=0
     ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
