@@ -151,7 +151,8 @@ then
         APP_VERSION=$(versionFromGit ${VENDOR_DIR}/adselect)
 
         APP_PORT=${APP_PORT:-8011}
-        APP_HOST=localhost
+        APP_HOST=${APP_HOST:-127.0.0.1}
+
         ES_NAMESPACE="${VENDOR_NAME}_adselect"
 
         save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
