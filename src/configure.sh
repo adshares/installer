@@ -140,6 +140,7 @@ then
         save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env adselect
         ADSELECT_ENDPOINT="http://${ADSELECT_SERVER_INTERFACE}:${ADSELECT_SERVER_PORT}"
         readOption ADSELECT_ENDPOINT "Internal OLD AdSelect service endpoint"
+        X_ADSELECT_VERSION=python
     else
         unset APP_PORT
         unset APP_HOST
@@ -159,6 +160,7 @@ then
 
         ADSELECT_ENDPOINT="http://${APP_HOST}:${APP_PORT}"
         readOption ADSELECT_ENDPOINT "Internal NEW AdSelect service endpoint"
+        X_ADSELECT_VERSION=php
     fi
 else
     INSTALL_ADSELECT=0
