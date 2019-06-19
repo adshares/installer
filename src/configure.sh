@@ -138,7 +138,7 @@ then
         ADSELECT_MONGO_DB_NAME=${ADSELECT_MONGO_DB_NAME:-"${VENDOR_NAME}_adselect"}
 
         save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env adselect
-        ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"http://${ADSELECT_SERVER_INTERFACE}:${ADSELECT_SERVER_PORT}"}
+        ADSELECT_ENDPOINT="http://${ADSELECT_SERVER_INTERFACE}:${ADSELECT_SERVER_PORT}"
         readOption ADSELECT_ENDPOINT "Internal OLD AdSelect service endpoint"
     else
         unset APP_PORT
@@ -156,13 +156,13 @@ then
 
         save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
 
-        ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"http://${APP_HOST}:${APP_PORT}"}
-        readOption ADSELECT_ENDPOINT "Internal AdSelect service endpoint"
+        ADSELECT_ENDPOINT="http://${APP_HOST}:${APP_PORT}"
+        readOption ADSELECT_ENDPOINT "Internal NEW AdSelect service endpoint"
     fi
 else
     INSTALL_ADSELECT=0
-    ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"https://example.com"}
-    readOption ADSELECT_ENDPOINT "External AdSelect service endpoint"
+    ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"http://localhost:8000"}
+    readOption ADSELECT_ENDPOINT "External (or previously installed) AdSelect service endpoint"
 fi
 
 configDefault ADPAY 1 INSTALL
