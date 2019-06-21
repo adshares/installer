@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 source $(dirname $(readlink -f "$0"))/_functions.sh --root
 echo " > $0 $*"
-CONFIG_NON_INTERACTIVE=1
+
 CONFIG_FILE=${ETC_DIR}/config.env
 if [[ -f ${CONFIG_FILE} ]]
 then
