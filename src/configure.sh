@@ -86,6 +86,12 @@ then
 
     configDefault ADSERVER_CRON 1 INSTALL
     readOption ADSERVER_CRON "Install AdServer cron jobs?" 1 INSTALL
+
+    configDefault ADSERVER_CRON_REMOVE 1 INSTALL
+    if [[ ${INSTALL_ADSERVER_CRON:-0} -eq 0 ]]
+    then
+        readOption ADSERVER_CRON_REMOVE "Clear cron jobs?" 1 INSTALL
+    fi
 fi
 
 if [[ ${INSTALL_ADPANEL:-0} -eq 1 ]]

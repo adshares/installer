@@ -87,20 +87,25 @@ source ${CONFIG_FILE}
 export SERVICE_NAME=${VENDOR_NAME}
 [[ ${INSTALL_FPM_POOL:-0} -eq 1 ]] && ${SCRIPT_DIR}/configure-daemon.sh fpm-pool ${SCRIPT_DIR} /etc/php/7.2/fpm/pool.d php7.2-fpm
 
-if [[ ${SKIP_SERVICES:-0} -ne 1 ]] && [[ ${INSTALL_ADSERVER_CRON:-0} -eq 1 ]]
+if [[ ${SKIP_SERVICES:-0} -ne 1 ]]
 then
-    TEMP_CRONTAB_FILE="$(mktemp).txt"
+    if [[ ${INSTALL_ADSERVER_CRON:-0} -eq 1 ]]
+    then
+        TEMP_CRONTAB_FILE="$(mktemp).txt"
 
-    for SERVICE in ${SERVICES}
-    do
-        export SERVICE_DIR="${VENDOR_DIR}/${SERVICE}"
+        for SERVICE in ${SERVICES}
+        do
+            export SERVICE_DIR="${VENDOR_DIR}/${SERVICE}"
 
-        [[ -e "${SERVICE_DIR}/deploy/crontablist.sh" ]] && "${SERVICE_DIR}/deploy/crontablist.sh" | tee -a ${TEMP_CRONTAB_FILE}
-    done
+            [[ -e "${SERVICE_DIR}/deploy/crontablist.sh" ]] && "${SERVICE_DIR}/deploy/crontablist.sh" | tee -a ${TEMP_CRONTAB_FILE}
+        done
 
-    crontab -u ${VENDOR_USER} ${TEMP_CRONTAB_FILE}
+        crontab -u ${VENDOR_USER} ${TEMP_CRONTAB_FILE}
 
-    rm ${TEMP_CRONTAB_FILE}
+        rm ${TEMP_CRONTAB_FILE}
+    elif [[ ${INSTALL_ADSERVER_CRON_REMOVE:-0} -eq 1 ]]
+        crontab -u ${VENDOR_USER} -r
+    fi
 fi
 
 if [[ ${SKIP_SERVICES:-0} -ne 1 ]]
