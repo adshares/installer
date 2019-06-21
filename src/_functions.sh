@@ -153,7 +153,14 @@ function readOption {
         fi
 
         local REPLY
-        read -e -p "`colorize BIWhite`${MESSAGE}`colorize` (`colorize BIRed`0 = no`colorize`, `colorize BIGreen`1 = yes`colorize`) [`colorize BIWhite`${ORIGINAL}`colorize`]: " -n ${MAX_LENGTH} REPLY
+
+        if [[ ${CONFIG_NON_INTERACTIVE:-0} -eq 1 ]]
+        then
+            REPLY=${ORIGINAL}
+        else
+            read -e -p "`colorize BIWhite`${MESSAGE}`colorize` (`colorize BIRed`0 = no`colorize`, `colorize BIGreen`1 = yes`colorize`) [`colorize BIWhite`${ORIGINAL}`colorize`]: " -n ${MAX_LENGTH} REPLY
+        fi
+
         if [[ "${REPLY}" == "1" ]] || [[ "${REPLY^^}" == "Y" ]]
         then
             REPLY=1
@@ -168,7 +175,14 @@ function readOption {
         eval "${_EXPR}"
         echo "<<< ${_EXPR}"
     else
-        read -e -p "`colorize BIWhite`${MESSAGE}`colorize`: `colorize BIGreen`" -i "${ORIGINAL}" -n ${MAX_LENGTH} ${VARNAME}
+        if [[ ${CONFIG_NON_INTERACTIVE:-0} -eq 1 ]]
+        then
+            local _EXPR="${VARNAME}='${ORIGINAL}'"
+            eval "${_EXPR}"
+        else
+            read -e -p "`colorize BIWhite`${MESSAGE}`colorize`: `colorize BIGreen`" -i "${ORIGINAL}" -n ${MAX_LENGTH} ${VARNAME}
+        fi
+
         echo -n `colorize`
         echo "<<< ${VARNAME}=\"${!VARNAME}\""
     fi
