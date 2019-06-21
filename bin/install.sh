@@ -104,6 +104,7 @@ then
 
         rm ${TEMP_CRONTAB_FILE}
     elif [[ ${INSTALL_ADSERVER_CRON_REMOVE:-0} -eq 1 ]]
+    then
         crontab -u ${VENDOR_USER} -r
     fi
 fi
