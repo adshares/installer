@@ -173,18 +173,24 @@ function readOption {
 
         local _EXPR="${VARNAME}=${REPLY}"
         eval "${_EXPR}"
-        echo "<<< ${_EXPR}"
+
+        if [[ ${CONFIG_NON_INTERACTIVE:-0} -eq 1 ]]
+        then
+            echo -n "<<< `colorize BIWhite` ${VARNAME}=`colorize BIGreen`${!VARNAME}`colorize BIWhite``colorize`"
+        else
+            echo "<<< ${_EXPR}"
+        fi
     else
         if [[ ${CONFIG_NON_INTERACTIVE:-0} -eq 1 ]]
         then
             local _EXPR="${VARNAME}='${ORIGINAL}'"
             eval "${_EXPR}"
+            echo -n "<<< `colorize BIWhite` ${VARNAME}=\"`colorize BIGreen`${!VARNAME}`colorize BIWhite`\"`colorize`"
         else
             read -e -p "`colorize BIWhite`${MESSAGE}`colorize`: `colorize BIGreen`" -i "${ORIGINAL}" -n ${MAX_LENGTH} ${VARNAME}
+            echo -n `colorize`
+            echo "<<< ${VARNAME}=\"${!VARNAME}\""
         fi
-
-        echo -n `colorize`
-        echo "<<< ${VARNAME}=\"${!VARNAME}\""
     fi
 }
 
