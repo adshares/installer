@@ -96,7 +96,7 @@ then
             TEMP_CRONTAB_FILE="$(mktemp).txt"
             _INSIDE=0
 
-            __CRONTAB=""
+            __CRONTAB="$(crontab -u ${VENDOR_USER} -l)"
 
             while read LINE
             do
@@ -110,7 +110,7 @@ then
                 then
                     echo ${CRONTAB_LINE} | tee -a ${TEMP_CRONTAB_FILE}
                 fi
-            done < "$(crontab -u ${VENDOR_USER} -l)\n"
+            done < ${__CRONTAB:-""}
 
             export SERVICE_DIR="${VENDOR_DIR}/${SERVICE}"
 
