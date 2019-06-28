@@ -110,7 +110,7 @@ then
                 then
                     echo ${CRONTAB_LINE} | tee -a ${TEMP_CRONTAB_FILE}
                 fi
-            done < $(crontab -u ${VENDOR_USER} -l)
+            done < "$(crontab -u ${VENDOR_USER} -l)"
 
             export SERVICE_DIR="${VENDOR_DIR}/${SERVICE}"
 
