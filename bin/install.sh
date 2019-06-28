@@ -98,7 +98,7 @@ then
 
             __CRONTAB="$(crontab -u ${VENDOR_USER} -l)"
 
-            for __CRONTAB_LINE in ${__CRONTAB[*]}
+            for __CRONTAB_LINE in "${__CRONTAB[*]}"
             do
                 if [[ "${__CRONTAB_LINE}" == "### <<< ${SERVICE} >>> ###" ]]
                 then
