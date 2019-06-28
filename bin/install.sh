@@ -110,7 +110,7 @@ then
                 then
                     echo ${CRONTAB_LINE} | tee -a ${TEMP_CRONTAB_FILE}
                 fi
-            done < "$(crontab -u ${VENDOR_USER} -l)"
+            done < "$(crontab -u ${VENDOR_USER} -l)\n"
 
             export SERVICE_DIR="${VENDOR_DIR}/${SERVICE}"
 
@@ -119,6 +119,7 @@ then
             echo "### >>> ${SERVICE} <<< ###" | tee -a ${TEMP_CRONTAB_FILE}
 
             crontab -u ${VENDOR_USER} ${TEMP_CRONTAB_FILE}
+cat ${TEMP_CRONTAB_FILE}
             rm ${TEMP_CRONTAB_FILE}
         done
     elif [[ ${INSTALL_ADSERVER_CRON_REMOVE:-0} -eq 1 ]]
