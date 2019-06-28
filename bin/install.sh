@@ -93,10 +93,14 @@ then
     then
         for SERVICE in ${SERVICES}
         do
+            TEMP_CRONTAB_FILE0="$(mktemp).txt"
+            crontab -u ${VENDOR_USER} -l 2>/dev/null 1> ${TEMP_CRONTAB_FILE0}
+            __CRONTAB=`cat ${TEMP_CRONTAB_FILE0}`
+            rm ${TEMP_CRONTAB_FILE0}
+
             TEMP_CRONTAB_FILE="$(mktemp).txt"
             _INSIDE=0
 
-            __CRONTAB="$(crontab -u ${VENDOR_USER} -l 2>/dev/null || echo "")"
 
             for __CRONTAB_LINE in "${__CRONTAB[*]}"
             do
@@ -119,7 +123,6 @@ then
             echo "### >>> ${SERVICE} <<< ###" | tee -a ${TEMP_CRONTAB_FILE}
 
             crontab -u ${VENDOR_USER} ${TEMP_CRONTAB_FILE}
-cat ${TEMP_CRONTAB_FILE}
             rm ${TEMP_CRONTAB_FILE}
         done
     elif [[ ${INSTALL_ADSERVER_CRON_REMOVE:-0} -eq 1 ]]
