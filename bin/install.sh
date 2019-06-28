@@ -91,18 +91,34 @@ if [[ ${SKIP_SERVICES:-0} -ne 1 ]]
 then
     if [[ ${INSTALL_ADSERVER_CRON:-0} -eq 1 ]]
     then
-        TEMP_CRONTAB_FILE="$(mktemp).txt"
-
         for SERVICE in ${SERVICES}
         do
+            TEMP_CRONTAB_FILE="$(mktemp).txt"
+            _INSIDE=0
+
+            for CRONTAB_LINE in `crontab -u ${VENDOR_USER} -l`
+            do
+                if [[ "${CRONTAB_LINE}" == "### <<< ${SERVICE} >>> ###" ]]
+                then
+                    _INSIDE=1
+                elif [[ "${CRONTAB_LINE}" == "### >>> ${SERVICE} <<< ###" ]]
+                then
+                    _INSIDE=0
+                elif [[ ${_INSIDE} -eq 0 ]]
+                then
+                    echo ${CRONTAB_LINE} | tee -a ${TEMP_CRONTAB_FILE}
+                fi
+            done
+
             export SERVICE_DIR="${VENDOR_DIR}/${SERVICE}"
 
+            echo "### <<< ${SERVICE} >>> ###" | tee -a ${TEMP_CRONTAB_FILE}
             [[ -e "${SERVICE_DIR}/deploy/crontablist.sh" ]] && "${SERVICE_DIR}/deploy/crontablist.sh" | tee -a ${TEMP_CRONTAB_FILE}
+            echo "### >>> ${SERVICE} <<< ###" | tee -a ${TEMP_CRONTAB_FILE}
+
+            crontab -u ${VENDOR_USER} ${TEMP_CRONTAB_FILE}
+            rm ${TEMP_CRONTAB_FILE}
         done
-
-        crontab -u ${VENDOR_USER} ${TEMP_CRONTAB_FILE}
-
-        rm ${TEMP_CRONTAB_FILE}
     elif [[ ${INSTALL_ADSERVER_CRON_REMOVE:-0} -eq 1 ]]
     then
         crontab -u ${VENDOR_USER} -r
