@@ -96,7 +96,9 @@ then
             TEMP_CRONTAB_FILE="$(mktemp).txt"
             _INSIDE=0
 
-            while read LINE
+            __CRONTAB="$(crontab -u ${VENDOR_USER} -l)"
+
+            while read -u10 LINE
             do
                 if [[ "${CRONTAB_LINE}" == "### <<< ${SERVICE} >>> ###" ]]
                 then
@@ -108,7 +110,7 @@ then
                 then
                     echo ${CRONTAB_LINE} | tee -a ${TEMP_CRONTAB_FILE}
                 fi
-            done <(crontab -u ${VENDOR_USER} -l)
+            done 10< ${__CRONTAB}
 
             export SERVICE_DIR="${VENDOR_DIR}/${SERVICE}"
 
