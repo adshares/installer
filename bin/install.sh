@@ -98,17 +98,17 @@ then
 
             __CRONTAB="$(crontab -u ${VENDOR_USER} -l)"
 
-            for LINE in ${__CRONTAB:-""}
+            for __CRONTAB_LINE in ${__CRONTAB:-""}
             do
-                if [[ "${CRONTAB_LINE}" == "### <<< ${SERVICE} >>> ###" ]]
+                if [[ "${__CRONTAB_LINE}" == "### <<< ${SERVICE} >>> ###" ]]
                 then
                     _INSIDE=1
-                elif [[ "${CRONTAB_LINE}" == "### >>> ${SERVICE} <<< ###" ]]
+                elif [[ "${__CRONTAB_LINE}" == "### >>> ${SERVICE} <<< ###" ]]
                 then
                     _INSIDE=0
                 elif [[ ${_INSIDE} -eq 0 ]]
                 then
-                    echo ${CRONTAB_LINE} | tee -a ${TEMP_CRONTAB_FILE}
+                    echo ${__CRONTAB_LINE} | tee -a ${TEMP_CRONTAB_FILE}
                 fi
             done
 
