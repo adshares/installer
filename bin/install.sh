@@ -96,7 +96,7 @@ then
             TEMP_CRONTAB_FILE="$(mktemp).txt"
             _INSIDE=0
 
-            __CRONTAB="$(crontab -u ${VENDOR_USER} -l)"
+            __CRONTAB="$(crontab -u ${VENDOR_USER} -l 2>/dev/null || echo "")"
 
             for __CRONTAB_LINE in "${__CRONTAB[*]}"
             do
