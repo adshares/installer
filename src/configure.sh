@@ -30,17 +30,8 @@ if [[ ${INSTALL_ADPANEL:-0} -eq 1 || ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
     readOption APP_NAME "Adserver name" 0 INSTALL
 
-    configDefault HTTPS 1 INSTALL
-    readOption HTTPS "Configure for HTTPS (strongly recommended)?" 1 INSTALL
-
-    if [[ ${INSTALL_HTTPS:-0} -eq 1 ]]
-    then
-        INSTALL_SCHEME=https
-        BANNER_FORCE_HTTPS=true
-    else
-        INSTALL_SCHEME=http
-        BANNER_FORCE_HTTPS=false
-    fi
+    INSTALL_SCHEME=https
+    BANNER_FORCE_HTTPS=true
 fi
 
 if [[ ${INSTALL_ADPANEL:-0} -eq 1 ]]
