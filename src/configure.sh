@@ -40,7 +40,12 @@ then
 fi
 if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
-    readOption API_HOSTNAME "AdServer domain (for serving banners, might get adblocked)" 0 INSTALL
+    readOption API_HOSTNAME "AdServer domain (backend)" 0 INSTALL
+
+    configDefault API_HOSTNAME_SERVE ${INSTALL_API_HOSTNAME} INSTALL
+    readOption API_HOSTNAME_SERVE "AdServer domain (for serving banners, might get adblocked)" 0 INSTALL
+    configDefault API_HOSTNAME_MAIN_JS ${INSTALL_API_HOSTNAME} INSTALL
+    readOption API_HOSTNAME_MAIN_JS "AdServer domain (for serving scripts, might get adblocked)" 0 INSTALL
 fi
 
 if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
@@ -54,6 +59,8 @@ then
     APP_NAME=${APP_NAME:-$INSTALL_APP_NAME}
 
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
+    SERVE_BASE_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME_SERVE}"
+    MAIN_JS_BASE_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME_MAIN_JS}"
     APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
     APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
 
@@ -64,6 +71,23 @@ then
     readOption ADSHARES_OPERATOR_EMAIL "ADS wallet owner email (for balance alerts)"
     ADSHARES_COMMAND=`which ads`
     ADSHARES_WORKINGDIR="${VENDOR_DIR}/adserver/storage/wallet"
+
+    configDefault ADSERVER_CLASSIFIER_EXTERNAL 1 INSTALL
+    readOption ADSERVER_CLASSIFIER_EXTERNAL "Install external classifier for AdServer?" 1 INSTALL
+    if [[ ${INSTALL_ADSERVER_CLASSIFIER_EXTERNAL:-0} -eq 1 ]]
+    then
+        readOption CLASSIFIER_EXTERNAL_API_KEY_NAME "External classifier API Key Name"
+        readOption CLASSIFIER_EXTERNAL_API_KEY_SECRET "External classifier API Key Secret"
+        CLASSIFIER_EXTERNAL_NAME="000100000004dbeb"
+        CLASSIFIER_EXTERNAL_BASE_URL="https://adclassify.adshares.net"
+        CLASSIFIER_EXTERNAL_PUBLIC_KEY="D69BCCF69C2D0F6CED025A05FA7F3BA687D1603AC1C8D9752209AC2BBF2C4D17"
+    else
+        CLASSIFIER_EXTERNAL_API_KEY_NAME=""
+        CLASSIFIER_EXTERNAL_API_KEY_SECRET=""
+        CLASSIFIER_EXTERNAL_NAME=""
+        CLASSIFIER_EXTERNAL_BASE_URL=""
+        CLASSIFIER_EXTERNAL_PUBLIC_KEY=""
+    fi
 
     readOption MAIL_HOST "mail smtp host"
     readOption MAIL_PORT "mail smtp port"
