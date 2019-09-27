@@ -86,7 +86,7 @@ then
     ADSHARES_WORKINGDIR="${VENDOR_DIR}/adserver/storage/wallet"
 
     configDefault ADSERVER_CLASSIFIER_EXTERNAL 1 INSTALL
-    readOption ADSERVER_CLASSIFIER_EXTERNAL "Install external classifier for AdServer?" 1 INSTALL
+    readOption ADSERVER_CLASSIFIER_EXTERNAL "Install Adshares external classifier for AdServer?" 1 INSTALL
     if [[ ${INSTALL_ADSERVER_CLASSIFIER_EXTERNAL:-0} -eq 1 ]]
     then
         readOption CLASSIFIER_EXTERNAL_API_KEY_NAME "External classifier API Key Name"
