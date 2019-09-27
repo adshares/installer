@@ -30,17 +30,8 @@ if [[ ${INSTALL_ADPANEL:-0} -eq 1 || ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
     readOption APP_NAME "Adserver name" 0 INSTALL
 
-    configDefault HTTPS 1 INSTALL
-    readOption HTTPS "Configure for HTTPS (strongly recommended)?" 1 INSTALL
-
-    if [[ ${INSTALL_HTTPS:-0} -eq 1 ]]
-    then
-        INSTALL_SCHEME=https
-        BANNER_FORCE_HTTPS=true
-    else
-        INSTALL_SCHEME=http
-        BANNER_FORCE_HTTPS=false
-    fi
+    INSTALL_SCHEME=https
+    BANNER_FORCE_HTTPS=true
 fi
 
 if [[ ${INSTALL_ADPANEL:-0} -eq 1 ]]
@@ -49,11 +40,19 @@ then
 fi
 if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
-    readOption API_HOSTNAME "AdServer domain (for serving banners, might get adblocked)" 0 INSTALL
-fi
+    if [[ -f /etc/nginx/sites-enabled/default ]]
+    then
+        echo "Default configuration of nginx must be deleted \"rm /etc/nginx/sites-enabled/default\""
+        exit 1
+    fi
 
-if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
-then
+    readOption API_HOSTNAME "AdServer domain (backend)" 0 INSTALL
+
+    configDefault API_HOSTNAME_SERVE ${INSTALL_API_HOSTNAME} INSTALL
+    readOption API_HOSTNAME_SERVE "AdServer domain (for serving banners, might get adblocked)" 0 INSTALL
+    configDefault API_HOSTNAME_MAIN_JS ${INSTALL_API_HOSTNAME} INSTALL
+    readOption API_HOSTNAME_MAIN_JS "AdServer domain (for serving scripts, might get adblocked)" 0 INSTALL
+
     unset APP_PORT
     unset APP_HOST
     unset APP_NAME
@@ -65,6 +64,18 @@ then
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
     APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
     APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
+    if [[ -z ${INSTALL_API_HOSTNAME_SERVE} ]]
+    then
+        SERVE_BASE_URL=""
+    else
+        SERVE_BASE_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME_SERVE}"
+    fi
+    if [[ -z ${INSTALL_API_HOSTNAME_MAIN_JS} ]]
+    then
+        MAIN_JS_BASE_URL=""
+    else
+        MAIN_JS_BASE_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME_MAIN_JS}"
+    fi
 
     readOption ADSHARES_ADDRESS "ADS wallet address"
     readOption ADSHARES_SECRET "ADS wallet secret"
@@ -73,6 +84,23 @@ then
     readOption ADSHARES_OPERATOR_EMAIL "ADS wallet owner email (for balance alerts)"
     ADSHARES_COMMAND=`which ads`
     ADSHARES_WORKINGDIR="${VENDOR_DIR}/adserver/storage/wallet"
+
+    configDefault ADSERVER_CLASSIFIER_EXTERNAL 1 INSTALL
+    readOption ADSERVER_CLASSIFIER_EXTERNAL "Install Adshares external classifier for AdServer?" 1 INSTALL
+    if [[ ${INSTALL_ADSERVER_CLASSIFIER_EXTERNAL:-0} -eq 1 ]]
+    then
+        readOption CLASSIFIER_EXTERNAL_API_KEY_NAME "External classifier API Key Name"
+        readOption CLASSIFIER_EXTERNAL_API_KEY_SECRET "External classifier API Key Secret"
+        CLASSIFIER_EXTERNAL_NAME="0001000000081a67"
+        CLASSIFIER_EXTERNAL_BASE_URL="https://adclassify.adshares.net"
+        CLASSIFIER_EXTERNAL_PUBLIC_KEY="614DA6DE6ACD8996E0D9124D437F477FE96CB7AFE2A3E2D9B852F58626A0F695"
+    else
+        CLASSIFIER_EXTERNAL_API_KEY_NAME=""
+        CLASSIFIER_EXTERNAL_API_KEY_SECRET=""
+        CLASSIFIER_EXTERNAL_NAME=""
+        CLASSIFIER_EXTERNAL_BASE_URL=""
+        CLASSIFIER_EXTERNAL_PUBLIC_KEY=""
+    fi
 
     readOption MAIL_HOST "mail smtp host"
     readOption MAIL_PORT "mail smtp port"
@@ -281,6 +309,9 @@ configDefault UPDATE_FILTERING 1 ADSERVER
 
 configDefault CREATE_ADMIN 1 ADSERVER
 readOption CREATE_ADMIN "Do you want to create an admin user for $ADSHARES_OPERATOR_EMAIL" 1 ADSERVER
+
+configDefault APP_HOST_SERVE ${INSTALL_API_HOSTNAME_SERVE} ADSERVER
+configDefault APP_HOST_MAIN_JS ${INSTALL_API_HOSTNAME_MAIN_JS} ADSERVER
 
 if [[ ${ADSERVER_CREATE_ADMIN:-0} -eq 1 ]]
 then

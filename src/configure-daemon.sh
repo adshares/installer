@@ -30,9 +30,10 @@ then
 
         [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]]       && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
         [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env.local ]] && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env.local && set +a
-echo ${VENDOR_NAME:-""},${VENDOR_USER:-""} ${APP_HOST:-""}:${APP_PORT:-0}
 
-        envsubst '${APP_PORT},${APP_HOST},${VENDOR_NAME},${VENDOR_USER}' < ${FILE} | tee ${TARGET_DIR}/${VENDOR_NAME}-${SERVICE_NAME}-$(basename ${FILE})
+        echo ${VENDOR_NAME:-""},${VENDOR_USER:-""} ${APP_HOST:-""}:${APP_PORT:-0}
+
+        envsubst '${APP_PORT},${APP_HOST},${_APP_HOST_SERVE},${_APP_HOST_MAIN_JS},${VENDOR_NAME},${VENDOR_USER}' < ${FILE} | tee ${TARGET_DIR}/${VENDOR_NAME}-${SERVICE_NAME}-$(basename ${FILE})
     done
 
     echo "Restart ${DAEMON_SERVICE_NAME}"
