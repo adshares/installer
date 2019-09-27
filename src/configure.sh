@@ -40,16 +40,19 @@ then
 fi
 if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
+    if [[ -f /etc/nginx/sites-enabled/default ]]
+    then
+        echo "Default configuration of nginx must be deleted \"rm /etc/nginx/sites-enabled/default\""
+        exit 1
+    fi
+
     readOption API_HOSTNAME "AdServer domain (backend)" 0 INSTALL
 
     configDefault API_HOSTNAME_SERVE ${INSTALL_API_HOSTNAME} INSTALL
     readOption API_HOSTNAME_SERVE "AdServer domain (for serving banners, might get adblocked)" 0 INSTALL
     configDefault API_HOSTNAME_MAIN_JS ${INSTALL_API_HOSTNAME} INSTALL
     readOption API_HOSTNAME_MAIN_JS "AdServer domain (for serving scripts, might get adblocked)" 0 INSTALL
-fi
 
-if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
-then
     unset APP_PORT
     unset APP_HOST
     unset APP_NAME
