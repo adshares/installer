@@ -62,10 +62,20 @@ then
     APP_NAME=${APP_NAME:-$INSTALL_APP_NAME}
 
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
-    SERVE_BASE_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME_SERVE}"
-    MAIN_JS_BASE_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME_MAIN_JS}"
     APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
     APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
+    if [[ -z ${INSTALL_API_HOSTNAME_SERVE} ]]
+    then
+        SERVE_BASE_URL=""
+    else
+        SERVE_BASE_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME_SERVE}"
+    fi
+    if [[ -z ${INSTALL_API_HOSTNAME_MAIN_JS} ]]
+    then
+        MAIN_JS_BASE_URL=""
+    else
+        MAIN_JS_BASE_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME_MAIN_JS}"
+    fi
 
     readOption ADSHARES_ADDRESS "ADS wallet address"
     readOption ADSHARES_SECRET "ADS wallet secret"
