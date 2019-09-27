@@ -33,7 +33,7 @@ then
 
         echo ${VENDOR_NAME:-""},${VENDOR_USER:-""} ${APP_HOST:-""}:${APP_PORT:-0}
 
-        envsubst '${APP_PORT},${APP_HOST},${SERVE_BASE_URL},${MAIN_JS_BASE_URL},${VENDOR_NAME},${VENDOR_USER}' < ${FILE} | tee ${TARGET_DIR}/${VENDOR_NAME}-${SERVICE_NAME}-$(basename ${FILE})
+        envsubst '${APP_PORT},${APP_HOST},${APP_HOST_SERVE},${APP_HOST_MAIN_JS},${VENDOR_NAME},${VENDOR_USER}' < ${FILE} | tee ${TARGET_DIR}/${VENDOR_NAME}-${SERVICE_NAME}-$(basename ${FILE})
     done
 
     echo "Restart ${DAEMON_SERVICE_NAME}"
