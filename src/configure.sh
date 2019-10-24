@@ -210,6 +210,7 @@ then
     APP_HOST=${APP_HOST:-127.0.0.1}
 
     DATABASE_URL=${DATABASE_URL:-"mysql://${VENDOR_NAME}:${VENDOR_NAME}@127.0.0.1:3306/${VENDOR_NAME}_adpay"}
+    LOG_FILE_PATH=${LOG_DIR}/adpay.log
 
     save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
 
