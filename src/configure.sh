@@ -180,7 +180,7 @@ then
     save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
 
     ADSELECT_ENDPOINT="http://${APP_HOST}:${APP_PORT}"
-    readOption ADSELECT_ENDPOINT "Internal NEW AdSelect service endpoint"
+    readOption ADSELECT_ENDPOINT "Internal AdSelect service endpoint"
     X_ADSELECT_VERSION=php
 else
     INSTALL_ADSELECT=0
@@ -212,7 +212,7 @@ then
     DATABASE_URL=${DATABASE_URL:-"mysql://${VENDOR_NAME}:${VENDOR_NAME}@127.0.0.1:3306/${VENDOR_NAME}_adpay"}
     LOG_FILE_PATH=${LOG_DIR}/adpay.log
 
-    save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
+    save_env ${VENDOR_DIR}/adpay/.env ${VENDOR_DIR}/adpay/.env.local adpay
 
     ADPAY_ENDPOINT="http://${APP_HOST}:${APP_PORT}"
     readOption ADPAY_ENDPOINT "Internal AdPay service endpoint"
