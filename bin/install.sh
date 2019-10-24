@@ -39,13 +39,7 @@ if [[ ${SKIP_CLONE:-0} -ne 1 ]]
 then
     for SERVICE in ${SERVICES}
     do
-        if [[ ${INSTALL_ADSELECT_OLD:-0} -eq 1 ]] && [[ "$SERVICE" == 'adselect' ]]
-        then
-            ${SCRIPT_DIR}/clone.sh ${SERVICE} python
-        else
-            ${SCRIPT_DIR}/clone.sh ${SERVICE} ${BRANCH}
-        fi
-
+        ${SCRIPT_DIR}/clone.sh ${SERVICE} ${BRANCH}
         [[ -e ${CONFIG_DIR}/${SERVICE}.env ]] && cp -n ${CONFIG_DIR}/${SERVICE}.env ${VENDOR_DIR}/${SERVICE}/.env
     done
 fi

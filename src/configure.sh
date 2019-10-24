@@ -163,39 +163,25 @@ if [[ ${INSTALL_ADSELECT:-0} -eq 1 ]]
 then
     INSTALL_ADSELECT=1
 
-    if [[ ${INSTALL_ADSELECT_OLD:-0} -eq 1 ]]
-    then
-        read_env ${VENDOR_DIR}/adselect/.env || read_env ${VENDOR_DIR}/adselect/.env.dist
+    unset APP_PORT
+    unset APP_HOST
+    unset APP_NAME
 
-        ADSELECT_SERVER_PORT=${ADSELECT_SERVER_PORT:-8111}
-        ADSELECT_SERVER_INTERFACE=${ADSELECT_SERVER_INTERFACE:-127.0.0.1}
-        ADSELECT_MONGO_DB_NAME=${ADSELECT_MONGO_DB_NAME:-"${VENDOR_NAME}_adselect"}
+    read_env ${VENDOR_DIR}/adselect/.env.local || read_env ${VENDOR_DIR}/adselect/.env
 
-        save_env ${VENDOR_DIR}/adselect/.env.dist ${VENDOR_DIR}/adselect/.env adselect
-        ADSELECT_ENDPOINT="http://${ADSELECT_SERVER_INTERFACE}:${ADSELECT_SERVER_PORT}"
-        readOption ADSELECT_ENDPOINT "Internal OLD AdSelect service endpoint"
-        X_ADSELECT_VERSION=python
-    else
-        unset APP_PORT
-        unset APP_HOST
-        unset APP_NAME
+    APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
+    APP_VERSION=$(versionFromGit ${VENDOR_DIR}/adselect)
 
-        read_env ${VENDOR_DIR}/adselect/.env.local || read_env ${VENDOR_DIR}/adselect/.env
+    APP_PORT=${APP_PORT:-8011}
+    APP_HOST=${APP_HOST:-127.0.0.1}
 
-        APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
-        APP_VERSION=$(versionFromGit ${VENDOR_DIR}/adselect)
+    ES_NAMESPACE="${VENDOR_NAME}_adselect"
 
-        APP_PORT=${APP_PORT:-8011}
-        APP_HOST=${APP_HOST:-127.0.0.1}
+    save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
 
-        ES_NAMESPACE="${VENDOR_NAME}_adselect"
-
-        save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
-
-        ADSELECT_ENDPOINT="http://${APP_HOST}:${APP_PORT}"
-        readOption ADSELECT_ENDPOINT "Internal NEW AdSelect service endpoint"
-        X_ADSELECT_VERSION=php
-    fi
+    ADSELECT_ENDPOINT="http://${APP_HOST}:${APP_PORT}"
+    readOption ADSELECT_ENDPOINT "Internal NEW AdSelect service endpoint"
+    X_ADSELECT_VERSION=php
 else
     INSTALL_ADSELECT=0
     ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"http://localhost:8000"}
@@ -208,19 +194,31 @@ readOption ADPAY "Install local >AdPay< service?" 1 INSTALL
 if [[ ${INSTALL_ADPAY:-0} -eq 1 ]]
 then
     INSTALL_ADPAY=1
-    ADPAY_ENDPOINT=http://localhost:8012
 
-    read_env ${VENDOR_DIR}/adpay/.env || read_env ${VENDOR_DIR}/adpay/.env.dist
+    unset APP_PORT
+    unset APP_HOST
+    unset APP_NAME
+    unset APP_ENV
 
-    ADPAY_SERVER_PORT=8012
-    ADPAY_SERVER_INTERFACE=127.0.0.1
-    ADPAY_MONGO_DB_NAME="${VENDOR_NAME}_adpay"
+    read_env ${VENDOR_DIR}/adpay/.env.local || read_env ${VENDOR_DIR}/adpay/.env
 
-    save_env ${VENDOR_DIR}/adpay/.env.dist ${VENDOR_DIR}/adpay/.env adpay
+    APP_ENV=prod
+    APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
+    APP_VERSION=$(versionFromGit ${VENDOR_DIR}/adpay)
+
+    APP_PORT=${APP_PORT:-8012}
+    APP_HOST=${APP_HOST:-127.0.0.1}
+
+    DATABASE_URL=${DATABASE_URL:-"mysql://${VENDOR_NAME}:${VENDOR_NAME}@127.0.0.1:3306/${VENDOR_NAME}_adpay"}
+
+    save_env ${VENDOR_DIR}/adselect/.env ${VENDOR_DIR}/adselect/.env.local adselect
+
+    ADPAY_ENDPOINT="http://${APP_HOST}:${APP_PORT}"
+    readOption ADPAY_ENDPOINT "Internal AdPay service endpoint"
 else
     INSTALL_ADPAY=0
-    ADPAY_ENDPOINT=${ADPAY_ENDPOINT:-"https://example.com"}
-    readOption ADPAY_ENDPOINT "External AdPay service endpoint"
+    ADPAY_ENDPOINT=${ADPAY_ENDPOINT:-"http://localhost:8000"}
+    readOption ADPAY_ENDPOINT "External (or previously installed) AdPay service endpoint"
 fi
 
 configDefault ADUSER 0 INSTALL
@@ -230,11 +228,18 @@ readOption ADUSER "Install local >AdUser< service?" 1 INSTALL
 
 if [[ ${INSTALL_ADUSER:-0} -eq 1 ]]
 then
+    INSTALL_ADUSER=1
+
+    unset APP_HOST
+    unset APP_NAME
+    unset APP_ENV
+
     readOption DATA_HOSTNAME "AdUser domain (data API)" 0 INSTALL
     unset APP_NAME
 
     read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env.local.dist
 
+    APP_ENV=prod
     APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
     APP_VERSION=$(versionFromGit ${VENDOR_DIR}/aduser)
     APP_HOST=${INSTALL_DATA_HOSTNAME}
