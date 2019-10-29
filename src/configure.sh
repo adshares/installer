@@ -209,7 +209,7 @@ then
     APP_PORT=${APP_PORT:-8012}
     APP_HOST=${APP_HOST:-127.0.0.1}
 
-    DATABASE_URL=${DATABASE_URL:-"mysql://${VENDOR_NAME}:${VENDOR_NAME}@127.0.0.1:3306/${VENDOR_NAME}_adpay"}
+    DATABASE_URL=${DATABASE_URL:-"mysql://${VENDOR_NAME}:${VENDOR_NAME}@localhost:3306/${VENDOR_NAME}_adpay"}
     LOG_FILE_PATH=${LOG_DIR}/adpay.log
 
     save_env ${VENDOR_DIR}/adpay/.env ${VENDOR_DIR}/adpay/.env.local adpay
@@ -251,12 +251,7 @@ then
     readOption RECAPTCHA_SECRET_KEY "Google reCAPTCHA v3 secret key"
 
     TRACKING_SECRET=${TRACKING_SECRET:-${ADUSER_TRACKING_SECRET:-"`date | sha256sum | head -c 64`"}}
-    DATABASE_URL=${DATABASE_URL:-"mysql://${VENDOR_NAME}:${VENDOR_NAME}@127.0.0.1:3306/${VENDOR_NAME}_aduser"}
-
-    if [[ ${DATABASE_URL} == "mysql://adshares:adshares@127.0.0.1:3306/aduser" ]]
-    then
-        DATABASE_URL="mysql://${VENDOR_NAME}:${VENDOR_NAME}@127.0.0.1:3306/${VENDOR_NAME}_aduser"
-    fi
+    DATABASE_URL=${DATABASE_URL:-"mysql://${VENDOR_NAME}:${VENDOR_NAME}@localhost:3306/${VENDOR_NAME}_aduser"}
 
     save_env ${VENDOR_DIR}/aduser/.env.local.dist ${VENDOR_DIR}/aduser/.env.local aduser
 
@@ -293,11 +288,11 @@ unset APP_NAME
 APP_NAME=${APP_NAME:-$INSTALL_APP_NAME}
 APP_HOST=${INSTALL_API_HOSTNAME}
 LOG_FILE_PATH=${LOG_DIR}/adserver.log
-LOG_LEVEL=debug
+LOG_LEVEL=${LOG_LEVEL:-error}
 LOG_CHANNEL=${LOG_CHANNEL:-single}
-DB_DATABASE="${VENDOR_NAME}_adserver"
-DB_USERNAME="${VENDOR_NAME}"
-DB_PASSWORD="${VENDOR_NAME}"
+DB_DATABASE=${DB_DATABASE:-"${VENDOR_NAME}_adserver"}
+DB_USERNAME=${DB_USERNAME:-"${VENDOR_NAME}"}
+DB_PASSWORD=${DB_PASSWORD:-"${VENDOR_NAME}"}
 
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env adserver
 
