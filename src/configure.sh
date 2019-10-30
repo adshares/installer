@@ -331,19 +331,19 @@ configVars | tee ${CONFIG_FILE}
 if [[ ${INSTALL_ADSELECT:-0} -eq 1 ]]
 then
     echo "adselect" | tee -a ${SCRIPT_DIR}/services.txt
-    configVars ADSELECT | tee -a ${VENDOR_DIR}/adselect/.env
+    configVars ADSELECT | tee -a ${VENDOR_DIR}/adselect/.env.local
 fi
 
 if [[ ${INSTALL_ADPAY:-0} -eq 1 ]]
 then
     echo "adpay" | tee -a ${SCRIPT_DIR}/services.txt
-    configVars ADPAY | tee -a ${VENDOR_DIR}/adpay/.env
+    configVars ADPAY | tee -a ${VENDOR_DIR}/adpay/.env.local
 fi
 
 if [[ ${INSTALL_ADUSER:-0} -eq 1 ]]
 then
     echo "aduser" | tee -a ${SCRIPT_DIR}/services.txt
-    #configVars ADUSER | tee -a ${VENDOR_DIR}/aduser/.env.local
+    configVars ADUSER | tee -a ${VENDOR_DIR}/aduser/.env.local
 fi
 
 if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]

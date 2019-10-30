@@ -14,11 +14,6 @@ test -z ${1:-""} || shift
 DAEMON_SERVICE_NAME=${1:-${DAEMON_NAME}}
 test -z ${1:-""} || shift
 
-echo "Remove ${VENDOR_NAME}-${SERVICE_NAME}-${DAEMON_NAME}*.conf from ${DAEMON_NAME} (if any exist)"
-find  ${TARGET_DIR} -maxdepth 1 -name "${VENDOR_NAME}-${SERVICE_NAME}-${DAEMON_NAME}*.conf" -type f -delete
-# BC - TODO: remove after full update propagation
-find  ${TARGET_DIR} -maxdepth 1 -name "${SERVICE_NAME}-${DAEMON_NAME}*.conf" -type f -delete
-
 FILE_COUNT=$(find ${SOURCE_DIR} -maxdepth 1 -name "${DAEMON_NAME}*.conf" -type f -print | wc -l)
 FILE_ITEMS=$(find ${SOURCE_DIR} -maxdepth 1 -name "${DAEMON_NAME}*.conf" -type f -print)
 
@@ -26,14 +21,26 @@ if [[ ${FILE_COUNT} -gt 0 ]]
 then
     for FILE in ${FILE_ITEMS}
     do
-        echo "Copy ${FILE} to ${TARGET_DIR}"
+        OVERWRITE_FILE=1
+        TARGET_FILE=${VENDOR_NAME}-${SERVICE_NAME}-$(basename ${FILE})
 
-        [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]]       && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
-        [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env.local ]] && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env.local && set +a
+        if test -f "${TARGET_DIR}/${TARGET_FILE}"; then
+            echo "Previous configuration: ${TARGET_DIR}/${TARGET_FILE}"
+            if test -f "${ETC_DIR}/${TARGET_FILE}.sha1" && ! sha1sum --status -c ${ETC_DIR}/${TARGET_FILE}.sha1; then
+                OVERWRITE_FILE=0
+                readOption OVERWRITE_FILE "Configuration file has been modified. Overwrite $(basename ${FILE})?" 1
+            fi
+        fi
 
-        echo ${VENDOR_NAME:-""},${VENDOR_USER:-""} ${APP_HOST:-""}:${APP_PORT:-0}
+        if [[ ${OVERWRITE_FILE} -eq 1 ]]; then
+            echo "Copy ${FILE} to ${TARGET_DIR} as ${TARGET_FILE}"
 
-        envsubst '${APP_PORT},${APP_HOST},${_APP_HOST_SERVE},${_APP_HOST_MAIN_JS},${VENDOR_NAME},${VENDOR_USER}' < ${FILE} | tee ${TARGET_DIR}/${VENDOR_NAME}-${SERVICE_NAME}-$(basename ${FILE})
+            [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]]       && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
+            [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env.local ]] && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env.local && set +a
+
+            envsubst '${APP_PORT},${APP_HOST},${_APP_HOST_SERVE},${_APP_HOST_MAIN_JS},${VENDOR_NAME},${VENDOR_USER}' < ${FILE} | tee ${TARGET_DIR}/${TARGET_FILE}
+            sha1sum ${TARGET_DIR}/${TARGET_FILE} > ${ETC_DIR}/${TARGET_FILE}.sha1
+        fi
     done
 
     echo "Restart ${DAEMON_SERVICE_NAME}"

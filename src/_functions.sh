@@ -113,7 +113,6 @@ function showVars {
         echo "#   DATA_DIR=$DATA_DIR"
         echo "#    ETC_DIR=$ETC_DIR"
         echo "#    LOG_DIR=$LOG_DIR"
-        echo "#    RUN_DIR=$RUN_DIR"
         echo "#"
         echo "# CONFIG_DIR=$CONFIG_DIR"
         echo "# SCRIPT_DIR=$SCRIPT_DIR"
@@ -329,7 +328,6 @@ BACKUP_DIR=${BACKUP_DIR:-"${VENDOR_DIR}/.backup"}
 DATA_DIR=${DATA_DIR:-"/var/lib/${VENDOR_NAME}"}
 ETC_DIR=${ETC_DIR:-"/etc/${VENDOR_NAME}"}
 LOG_DIR=${LOG_DIR:-"/var/log/${VENDOR_NAME}"}
-RUN_DIR=${RUN_DIR:-"/var/run/${VENDOR_NAME}"}
 SCRIPT_DIR=${SCRIPT_DIR:-"${VENDOR_DIR}/.script"}
 
 CONFIG_DIR=${CONFIG_DIR:-"${ETC_DIR}/conf.d"}
