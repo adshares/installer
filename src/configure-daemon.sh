@@ -38,7 +38,7 @@ then
             [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env ]]       && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env && set +a
             [[ -e ${VENDOR_DIR}/${SERVICE_NAME}/.env.local ]] && set -a && source ${VENDOR_DIR}/${SERVICE_NAME}/.env.local && set +a
 
-            envsubst '${APP_PORT},${APP_HOST},${_APP_HOST_SERVE},${_APP_HOST_MAIN_JS},${VENDOR_NAME},${VENDOR_USER}' < ${FILE} | tee ${TARGET_DIR}/${TARGET_FILE}
+            envsubst '${APP_PORT},${APP_HOST},${_APP_HOST_SERVE},${_APP_HOST_MAIN_JS},${VENDOR_NAME},${VENDOR_USER},${VENDOR_DIR},${LOG_DIR},${PHP_FPM_SOCK}' < ${FILE} | tee ${TARGET_DIR}/${TARGET_FILE}
             sha1sum ${TARGET_DIR}/${TARGET_FILE} > ${ETC_DIR}/${TARGET_FILE}.sha1
         fi
     done

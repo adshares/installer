@@ -329,8 +329,8 @@ DATA_DIR=${DATA_DIR:-"/var/lib/${VENDOR_NAME}"}
 ETC_DIR=${ETC_DIR:-"/etc/${VENDOR_NAME}"}
 LOG_DIR=${LOG_DIR:-"/var/log/${VENDOR_NAME}"}
 SCRIPT_DIR=${SCRIPT_DIR:-"${VENDOR_DIR}/.script"}
-
 CONFIG_DIR=${CONFIG_DIR:-"${ETC_DIR}/conf.d"}
+PHP_FPM_SOCK=/var/run/${VENDOR_NAME}-php-fpm.sock
 
 [[ -z ${SERVICE_NAME} ]] || SERVICE_DIR="$VENDOR_DIR/$SERVICE_NAME"
 
