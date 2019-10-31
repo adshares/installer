@@ -8,6 +8,8 @@ source ${SRC_DIR}/_functions.sh --root
 export VENDOR_NAME
 export VENDOR_DIR
 export VENDOR_USER
+export LOG_DIR
+export PHP_FPM_SOCK
 
 cp -r ${SRC_DIR}/* ${SCRIPT_DIR}
 chmod +x ${SCRIPT_DIR}/*.sh
