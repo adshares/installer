@@ -21,23 +21,11 @@ configDefault DATA_HOSTNAME "`php -r 'if(count($argv) == 3) echo parse_url($argv
 configDefault ADSERVER 1 INSTALL
 readOption ADSERVER "Install local >AdServer< service?" 1 INSTALL
 
-configDefault ADPANEL 1 INSTALL
-readOption ADPANEL "Install local >AdPanel< service?" 1 INSTALL
-
 configDefault APP_NAME "Best Adshares Adserver" INSTALL
 
-if [[ ${INSTALL_ADPANEL:-0} -eq 1 || ${INSTALL_ADSERVER:-0} -eq 1 ]]
-then
-    readOption APP_NAME "Adserver name" 0 INSTALL
+INSTALL_SCHEME=https
+BANNER_FORCE_HTTPS=true
 
-    INSTALL_SCHEME=https
-    BANNER_FORCE_HTTPS=true
-fi
-
-if [[ ${INSTALL_ADPANEL:-0} -eq 1 ]]
-then
-    readOption HOSTNAME "AdPanel domain (UI for advertisers and publishers)" 0 INSTALL
-fi
 if [[ ${INSTALL_ADSERVER:-0} -eq 1 ]]
 then
     if [[ -f /etc/nginx/sites-enabled/default ]]
@@ -46,6 +34,7 @@ then
         exit 1
     fi
 
+    readOption APP_NAME "Adserver name" 0 INSTALL
     readOption API_HOSTNAME "AdServer domain (backend)" 0 INSTALL
 
     configDefault API_HOSTNAME_SERVE ${INSTALL_API_HOSTNAME} INSTALL
@@ -62,7 +51,7 @@ then
     APP_NAME=${APP_NAME:-$INSTALL_APP_NAME}
 
     APP_URL="${INSTALL_SCHEME}://${INSTALL_API_HOSTNAME}"
-    APP_ID=${APP_ID:-"_`echo "${INSTALL_HOSTNAME}" | sha256sum | head -c 16`"}
+    APP_ID=${APP_ID:-"_`echo "${INSTALL_API_HOSTNAME}" | sha256sum | head -c 16`"}
     APP_KEY=${APP_KEY:-"base64:`date | sha256sum | head -c 32 | base64`"}
     if [[ -z ${INSTALL_API_HOSTNAME_SERVE} ]]
     then
@@ -120,7 +109,13 @@ then
     then
         readOption ADSERVER_CRON_REMOVE "Clear cron jobs?" 1 INSTALL
     fi
+else
+    configDefault API_HOSTNAME ${API_HOSTNAME:-"${INSTALL_SCHEME}://app.example.com"}
+    readOption API_HOSTNAME "External (or previously installed) AdServer domain (backend)"
 fi
+
+configDefault ADPANEL 1 INSTALL
+readOption ADPANEL "Install local >AdPanel< service?" 1 INSTALL
 
 if [[ ${INSTALL_ADPANEL:-0} -eq 1 ]]
 then
@@ -131,6 +126,12 @@ then
     unset APP_HOST
     unset APP_NAME
     unset APP_ENV
+
+    if [[ ${INSTALL_ADSERVER:-0} -eq 0 ]]
+    then
+        readOption APP_NAME "Adserver name" 0 INSTALL
+    fi
+    readOption HOSTNAME "AdPanel domain (UI for advertisers and publishers)" 0 INSTALL
 
     APP_HOST=${INSTALL_HOSTNAME}
 
@@ -152,7 +153,7 @@ then
     fi
 else
     configDefault ADPANEL_ENDPOINT ${ADPANEL_URL:-"${INSTALL_SCHEME}://example.com"}
-    readOption ADPANEL_ENDPOINT "External AdPanel service endpoint"
+    readOption ADPANEL_ENDPOINT "External (or previously installed) AdPanel service endpoint"
     ADPANEL_URL=${ADPANEL_ENDPOINT:-${ADPANEL_URL}}
 fi
 
@@ -184,7 +185,7 @@ then
     X_ADSELECT_VERSION=php
 else
     INSTALL_ADSELECT=0
-    ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"http://localhost:8000"}
+    ADSELECT_ENDPOINT=${ADSELECT_ENDPOINT:-"http://localhost:8011"}
     readOption ADSELECT_ENDPOINT "External (or previously installed) AdSelect service endpoint"
 fi
 
@@ -209,7 +210,11 @@ then
     APP_PORT=${APP_PORT:-8012}
     APP_HOST=${APP_HOST:-127.0.0.1}
 
-    DATABASE_URL=${DATABASE_URL:-"mysql://${VENDOR_NAME}:${VENDOR_NAME}@localhost:3306/${VENDOR_NAME}_adpay"}
+    DB_DATABASE=${DB_DATABASE:-"${VENDOR_NAME}_adpay"}
+    DB_USERNAME=${DB_USERNAME:-"${VENDOR_NAME}"}
+    DB_PASSWORD=${DB_PASSWORD:-"${VENDOR_NAME}"}
+    DATABASE_URL=${DATABASE_URL:-"mysql://${DB_USERNAME}:${DB_PASSWORD}@localhost:3306/${DB_DATABASE}"}
+
     LOG_FILE_PATH=${LOG_DIR}/adpay.log
 
     save_env ${VENDOR_DIR}/adpay/.env ${VENDOR_DIR}/adpay/.env.local adpay
@@ -218,7 +223,7 @@ then
     readOption ADPAY_ENDPOINT "Internal AdPay service endpoint"
 else
     INSTALL_ADPAY=0
-    ADPAY_ENDPOINT=${ADPAY_ENDPOINT:-"http://localhost:8000"}
+    ADPAY_ENDPOINT=${ADPAY_ENDPOINT:-"http://localhost:8012"}
     readOption ADPAY_ENDPOINT "External (or previously installed) AdPay service endpoint"
 fi
 
@@ -231,31 +236,37 @@ if [[ ${INSTALL_ADUSER:-0} -eq 1 ]]
 then
     INSTALL_ADUSER=1
 
+    unset APP_PORT
     unset APP_HOST
     unset APP_NAME
     unset APP_ENV
 
-    readOption DATA_HOSTNAME "AdUser domain (data API)" 0 INSTALL
-    unset APP_NAME
-
-    read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env.local.dist
+    read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env
 
     APP_ENV=prod
     APP_SECRET=${APP_SECRET:-"`date | sha256sum | head -c 64`"}
     APP_VERSION=$(versionFromGit ${VENDOR_DIR}/aduser)
-    APP_HOST=${INSTALL_DATA_HOSTNAME}
 
-    readOption APP_NAME "AdUser Service Name"
+    APP_PORT=${APP_PORT:-80}
+    APP_HOST=${APP_HOST:-127.0.0.1}
 
     readOption RECAPTCHA_SITE_KEY "Google reCAPTCHA v3 site key"
     readOption RECAPTCHA_SECRET_KEY "Google reCAPTCHA v3 secret key"
 
-    TRACKING_SECRET=${TRACKING_SECRET:-${ADUSER_TRACKING_SECRET:-"`date | sha256sum | head -c 64`"}}
-    DATABASE_URL=${DATABASE_URL:-"mysql://${VENDOR_NAME}:${VENDOR_NAME}@localhost:3306/${VENDOR_NAME}_aduser"}
+    ADUSER_TRACKING_SECRET=${ADUSER_TRACKING_SECRET:-"`date | sha256sum | head -c 64`"}
+    DATABASE_NAME=${DATABASE_NAME:-"${VENDOR_NAME}_aduser"}
+    DATABASE_USER=${DATABASE_USER:-"${VENDOR_NAME}"}
+    DATABASE_PASSWORD=${DATABASE_PASSWORD:-"${VENDOR_NAME}"}
+    DATABASE_URL=${DATABASE_URL:-"mysql://${DATABASE_USER}:${DATABASE_PASSWORD}@localhost:3306/${DATABASE_NAME}"}
 
-    save_env ${VENDOR_DIR}/aduser/.env.local.dist ${VENDOR_DIR}/aduser/.env.local aduser
+    LOG_FILE_PATH=${LOG_DIR}/aduser.log
 
-    ADUSER_BASE_URL="${INSTALL_SCHEME}://${INSTALL_DATA_HOSTNAME}"
+    save_env ${VENDOR_DIR}/aduser/.env ${VENDOR_DIR}/aduser/.env.local aduser
+
+    ADUSER_ENDPOINT="http://${APP_HOST}:${APP_PORT}"
+    readOption ADUSER_ENDPOINT "Internal AdUser service endpoint"
+
+    ADUSER_BASE_URL="$ADUSER_ENDPOINT"
 
 #    readOption UPDATE_DATA "Update context discovery data?" 1 ADUSER
 else
@@ -296,7 +307,7 @@ DB_PASSWORD=${DB_PASSWORD:-"${VENDOR_NAME}"}
 
 save_env ${VENDOR_DIR}/adserver/.env.dist ${VENDOR_DIR}/adserver/.env adserver
 
-configDefault CERTBOT_NGINX 1 INSTALL
+configDefault CERTBOT_NGINX 0 INSTALL
 if [[ "${INSTALL_SCHEME^^}" == "HTTPS" ]]
 then
     readOption CERTBOT_NGINX "Do you want to setup SSL using Let's Encrypt / certbot" 1 INSTALL
@@ -311,8 +322,8 @@ configDefault UPDATE_FILTERING 1 ADSERVER
 configDefault CREATE_ADMIN 1 ADSERVER
 readOption CREATE_ADMIN "Do you want to create an admin user for $ADSHARES_OPERATOR_EMAIL" 1 ADSERVER
 
-configDefault APP_HOST_SERVE ${INSTALL_API_HOSTNAME_SERVE} ADSERVER
-configDefault APP_HOST_MAIN_JS ${INSTALL_API_HOSTNAME_MAIN_JS} ADSERVER
+configDefault APP_HOST_SERVE ${INSTALL_API_HOSTNAME_SERVE:-"${API_HOSTNAME}"} ADSERVER
+configDefault APP_HOST_MAIN_JS ${INSTALL_API_HOSTNAME_MAIN_JS:-"${ADSERVER_APP_HOST_SERVE}"} ADSERVER
 
 if [[ ${ADSERVER_CREATE_ADMIN:-0} -eq 1 ]]
 then
