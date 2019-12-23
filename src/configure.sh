@@ -203,6 +203,10 @@ then
     unset APP_HOST
     unset APP_NAME
     unset APP_ENV
+    unset DB_DATABASE
+    unset DB_USERNAME
+    unset DB_PASSWORD
+    unset DATABASE_URL
 
     read_env ${VENDOR_DIR}/adpay/.env.local || read_env ${VENDOR_DIR}/adpay/.env
 
@@ -243,6 +247,9 @@ then
     unset APP_HOST
     unset APP_NAME
     unset APP_ENV
+    unset DB_DATABASE
+    unset DB_USERNAME
+    unset DB_PASSWORD
 
     read_env ${VENDOR_DIR}/aduser/.env.local || read_env ${VENDOR_DIR}/aduser/.env
 
