@@ -117,6 +117,7 @@ DB_PASSWORD=${VENDOR_NAME}
 echo "CREATE USER IF NOT EXISTS '$DB_USERNAME'@'%' IDENTIFIED BY '$DB_PASSWORD';" | mysql
 echo 'FLUSH PRIVILEGES;' | mysql
 echo "SELECT User,Host FROM mysql.user;" | mysql
+echo "DB user '$DB_USERNAME' created"
 
 DB_DATABASES=("${VENDOR_NAME}_adserver" "${VENDOR_NAME}_aduser" "${VENDOR_NAME}_adpay")
 
@@ -127,6 +128,7 @@ do
     if [[ "$DB_DATABASE" ]]
     then
         echo "CREATE DATABASE IF NOT EXISTS \`$DB_DATABASE\`;" | "${mysql[@]}"
+        echo "DB '$DB_DATABASE' created"
         mysql+=( "$DB_DATABASE" )
     fi
 
