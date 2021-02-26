@@ -11,9 +11,11 @@
 > - Existing ADS account (with credentials)
 > - A clean Ubuntu/Bionic install
 > - You are logged in as a user with `sudo` privileges
+> - domain for adserver UI and another for serving ads pointing to server IP (eg. main domain for UI and subdomain for serving ads: example.com and app.example.com)
 > - You have mail server ready somewhere (use something like [MailHog](https://github.com/mailhog/MailHog) for local testing)
 
 ```bash
+apt-get install git
 git clone https://github.com/adshares/installer.git
 cd installer
 sudo -H bin/install.sh
