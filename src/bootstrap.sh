@@ -99,7 +99,7 @@ systemctl start elasticsearch.service || echo "Couldn't start elasticsearch"
 COMPOSER_INSTALLER_FILENAME="composer-installer.php"
 curl https://getcomposer.org/installer -sS -o ${TEMP_DIR}/${COMPOSER_INSTALLER_FILENAME}
 #test $(sha384sum ${TEMP_DIR}/${COMPOSER_INSTALLER_FILENAME} | head -c 96) == "a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1"
-php ${TEMP_DIR}/${COMPOSER_INSTALLER_FILENAME} --version=1.10.20 --install-dir=/usr/local/bin --filename=composer
+php ${TEMP_DIR}/${COMPOSER_INSTALLER_FILENAME} --install-dir=/usr/local/bin --filename=composer
 
 # ===
 
