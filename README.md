@@ -4,7 +4,7 @@
     </a>
 </p>
 
-<h3 align="center"><small>Adshares / Installer</small></h3>
+<h3 align="center"><small>(DEPRECATED) Adshares / Installer</small></h3>
 
 ## Quick Start (on Ubuntu 18.04)
 > ### Prerequisites
