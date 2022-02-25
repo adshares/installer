@@ -5,9 +5,11 @@
 </p>
 
 <h3 align="center"><small>(DEPRECATED) Adshares / Installer</small></h3>
+<br />
+<b>Project is DEPRECATED due to incompatible changes in other modules. </b>
 
 ## Quick Start (on Ubuntu 18.04)
-Project is DEPRECATED due to incompatible changes in other modules. 
+
 
 > ### Prerequisites
 > - Existing ADS account (with credentials)
