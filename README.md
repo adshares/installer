@@ -6,7 +6,7 @@
 
 <h3 align="center"><small>(DEPRECATED) Adshares / Installer</small></h3>
 <br />
-<b>Project is DEPRECATED due to incompatible changes in other modules. </b>
+<b>Project is DEPRECATED due to incompatible changes in other modules. See https://github.com/adshares/adserver/wiki/How-to-start-adserver </b>
 
 ## Quick Start (on Ubuntu 18.04)
 
